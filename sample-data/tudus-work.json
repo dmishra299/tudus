@@ -1,0 +1,300 @@
+{
+  "version": 1,
+  "nextId": 23,
+  "settings": { "theme": "system", "dismissedCarry": {} },
+  "weeks": [
+    {
+      "ref": "2026-W33",
+      "wref": "W33",
+      "startDate": "2026-08-10",
+      "endDate": "2026-08-14",
+      "carriedFrom": null,
+      "tasks": [
+        {
+          "id": 1,
+          "rank": 1,
+          "title": "Signal Ingestion Pipeline — schema migration (v2)",
+          "status": "done",
+          "nextMeeting": null,
+          "carried": false,
+          "expanded": true,
+          "subtasks": [
+            { "text": "Review current schema in Confluence", "link": "https://meridian.atlassian.net/wiki/spaces/ENG/pages/9001/Signal+Schema+v2" },
+            { "text": "PLAT-3821 — add source_region field to ingest API", "link": "https://meridian.atlassian.net/browse/PLAT-3821" },
+            { "text": "PLAT-3822 — backfill existing records with region=default", "link": "https://meridian.atlassian.net/browse/PLAT-3822" },
+            { "text": "Coordinate cutover window with platform-ops", "link": null }
+          ],
+          "notes": "Aug 11: Schema approved in design review. Migration window confirmed for Friday night.\nAug 14: Both tickets merged and deployed. Backfill ran clean on staging, prod cutover went smoothly. No incidents."
+        },
+        {
+          "id": 2,
+          "rank": 2,
+          "title": "Alert Deduplication Engine — design doc review",
+          "status": "in-prog",
+          "nextMeeting": "2026-08-21T10:00",
+          "carried": false,
+          "expanded": false,
+          "subtasks": [
+            { "text": "Design doc v3 (latest draft)", "link": "https://meridian.atlassian.net/wiki/spaces/ENG/pages/9120/Alert+Dedup+Design+v3" },
+            { "text": "PLAT-3844 — track review sign-offs", "link": "https://meridian.atlassian.net/browse/PLAT-3844" },
+            { "text": "\tAlex — approved", "link": null },
+            { "text": "\tSam — pending (fingerprint collision concern)", "link": null },
+            { "text": "\tMorgan — pending", "link": null }
+          ],
+          "notes": "Aug 12: Circulated v3 to reviewers. Alex came back same day with LGTM. Waiting on Sam and Morgan.\nAug 14: Sam flagged a concern about fingerprint collision rate at 1M events/min — need to address in v4."
+        },
+        {
+          "id": 3,
+          "rank": 3,
+          "title": "Cloud Migration (AWS) — Prism ingestion tier — capacity planning",
+          "status": "todo",
+          "nextMeeting": "2026-08-19T14:00",
+          "carried": false,
+          "expanded": false,
+          "subtasks": [
+            { "text": "Current on-prem throughput baseline", "link": "https://meridian.atlassian.net/wiki/spaces/ENG/pages/8800/Prism+Migration+Baseline" },
+            { "text": "PLAT-3790 — AWS capacity sizing", "link": "https://meridian.atlassian.net/browse/PLAT-3790" },
+            { "text": "Proposal deck for steering committee", "link": "https://docs.google.com/presentation/d/1BxYz_example/edit" }
+          ],
+          "notes": null
+        }
+      ]
+    },
+    {
+      "ref": "2026-W34",
+      "wref": "W34",
+      "startDate": "2026-08-17",
+      "endDate": "2026-08-21",
+      "carriedFrom": "2026-W33",
+      "tasks": [
+        {
+          "id": 4,
+          "rank": 1,
+          "title": "Alert Deduplication Engine — design doc review",
+          "status": "done",
+          "nextMeeting": "2026-08-21T10:00",
+          "carried": true,
+          "expanded": false,
+          "subtasks": [
+            { "text": "Design doc v4 (fingerprint collision addressed)", "link": "https://meridian.atlassian.net/wiki/spaces/ENG/pages/9120/Alert+Dedup+Design+v4" },
+            { "text": "PLAT-3844 — all reviewers signed off", "link": "https://meridian.atlassian.net/browse/PLAT-3844" },
+            { "text": "\tAlex — approved", "link": null },
+            { "text": "\tSam — approved (v4)", "link": null },
+            { "text": "\tMorgan — approved", "link": null }
+          ],
+          "notes": "Aug 17: Addressed Sam's fingerprint collision concern — switched to SHA-256 composite key on (source, rule_id, host, 15min_window). Republished as v4.\nAug 19: Morgan approved after a quick sync. All reviewers green. Design locked."
+        },
+        {
+          "id": 5,
+          "rank": 2,
+          "title": "Cloud Migration (AWS) — Prism ingestion tier — capacity planning",
+          "status": "done",
+          "nextMeeting": "2026-08-19T14:00",
+          "carried": true,
+          "expanded": false,
+          "subtasks": [
+            { "text": "Capacity plan (approved)", "link": "https://meridian.atlassian.net/wiki/spaces/ENG/pages/8800/Prism+Migration+Baseline" },
+            { "text": "PLAT-3790 — AWS capacity sizing (closed)", "link": "https://meridian.atlassian.net/browse/PLAT-3790" }
+          ],
+          "notes": "Aug 19: Steering committee approved the proposal. 3×r6i.4xlarge + ALB for ingestion tier. Target cutover: W42."
+        },
+        {
+          "id": 6,
+          "rank": 3,
+          "title": "Q3 Architecture review — prepare slide deck",
+          "status": "in-prog",
+          "nextMeeting": "2026-09-02T09:00",
+          "carried": false,
+          "expanded": false,
+          "subtasks": [
+            { "text": "Draft deck", "link": "https://docs.google.com/presentation/d/1AbCd_example/edit" },
+            { "text": "Section: Dedup engine architecture", "link": null },
+            { "text": "Section: AWS migration roadmap (W42 target)", "link": null },
+            { "text": "Section: Prism — 2026 OKR status", "link": null },
+            { "text": "Review with Casey before the meeting", "link": null }
+          ],
+          "notes": "Aug 18: Outline drafted. Casey suggested leading with OKR status — more exec-friendly.\nAug 20: Sections 1 and 2 drafted. Migration roadmap needs updating after steering committee decision."
+        },
+        {
+          "id": 7,
+          "rank": 4,
+          "title": "Onboard Sam to the Prism codebase",
+          "status": "done",
+          "nextMeeting": null,
+          "carried": false,
+          "expanded": false,
+          "subtasks": [
+            { "text": "Sentinel Platform repo", "link": "https://github.com/meridian-corp/sentinel-platform" },
+            { "text": "Walk through ingestion service architecture", "link": null },
+            { "text": "Set up local dev environment", "link": null }
+          ],
+          "notes": null
+        }
+      ]
+    },
+    {
+      "ref": "2026-W35",
+      "wref": "W35",
+      "startDate": "2026-08-24",
+      "endDate": "2026-08-28",
+      "carriedFrom": null,
+      "tasks": [
+        {
+          "id": 8,
+          "rank": 1,
+          "title": "Q3 Architecture review — prepare slide deck",
+          "status": "done",
+          "nextMeeting": "2026-09-02T09:00",
+          "carried": true,
+          "expanded": false,
+          "subtasks": [
+            { "text": "Final deck (shared with team)", "link": "https://docs.google.com/presentation/d/1AbCd_example/edit" }
+          ],
+          "notes": "Aug 24: Updated AWS migration section with steering committee outcomes.\nAug 27: Casey reviewed — added risk mitigation slide at their suggestion. Deck is final."
+        },
+        {
+          "id": 9,
+          "rank": 2,
+          "title": "PLAT-3901 — Dedup engine: implement fingerprinting service (Phase 1)",
+          "status": "in-prog",
+          "nextMeeting": null,
+          "carried": false,
+          "expanded": false,
+          "subtasks": [
+            { "text": "PLAT-3901 parent ticket", "link": "https://meridian.atlassian.net/browse/PLAT-3901" },
+            { "text": "PR #441 — fingerprinting service scaffold", "link": "https://github.com/meridian-corp/sentinel-platform/pull/441" },
+            { "text": "\tUnit tests for SHA-256 composite key logic", "link": null },
+            { "text": "\tIntegration test harness stubbed", "link": null },
+            { "text": "PR #449 — Redis-backed dedup window (awaiting infra review)", "link": "https://github.com/meridian-corp/sentinel-platform/pull/449" }
+          ],
+          "notes": "Aug 25: PR 441 merged after two rounds of review. Redis TTL set to 900s (15-min window).\nAug 27: PR 449 open, integration tests passing. Waiting on Jordan's infra review before merge."
+        },
+        {
+          "id": 10,
+          "rank": 3,
+          "title": "Interview loop — senior platform engineer candidate",
+          "status": "done",
+          "nextMeeting": "2026-08-26T11:00",
+          "carried": false,
+          "expanded": false,
+          "subtasks": [
+            { "text": "System design question: distributed rate limiter", "link": null },
+            { "text": "Debrief with hiring panel", "link": null }
+          ],
+          "notes": "Aug 26: Strong candidate — clear reasoning on trade-offs, good depth on Redis and consistent hashing. Recommending hire."
+        },
+        {
+          "id": 11,
+          "rank": 4,
+          "title": "Prism AWS migration — network topology decision",
+          "status": "todo",
+          "nextMeeting": "2026-09-01T15:00",
+          "carried": false,
+          "expanded": false,
+          "subtasks": [
+            { "text": "PLAT-3912 — network topology sub-ticket", "link": "https://meridian.atlassian.net/browse/PLAT-3912" },
+            { "text": "VPC peering vs Transit Gateway trade-off analysis", "link": "https://meridian.atlassian.net/wiki/spaces/ENG/pages/9300/Network+Topology+Options" },
+            { "text": "Decision needed from Jordan before W37", "link": null }
+          ],
+          "notes": null
+        }
+      ]
+    },
+    {
+      "ref": "2026-W36",
+      "wref": "W36",
+      "startDate": "2026-08-31",
+      "endDate": "2026-09-04",
+      "carriedFrom": null,
+      "tasks": [
+        {
+          "id": 12,
+          "rank": 1,
+          "title": "PLAT-3901 — Dedup engine: implement fingerprinting service (Phase 1)",
+          "status": "in-prog",
+          "nextMeeting": null,
+          "carried": true,
+          "expanded": false,
+          "subtasks": [
+            { "text": "PLAT-3901 parent ticket", "link": "https://meridian.atlassian.net/browse/PLAT-3901" },
+            { "text": "PR #449 — Redis-backed dedup window (merged Sep 1)", "link": "https://github.com/meridian-corp/sentinel-platform/pull/449" },
+            { "text": "PR #457 — load-test harness", "link": "https://github.com/meridian-corp/sentinel-platform/pull/457" },
+            { "text": "\tTarget: 1.2M events/min at p99 < 20ms", "link": null },
+            { "text": "\tBlocker: single-shard Redis bottleneck — investigating cluster mode", "link": null }
+          ],
+          "notes": "Sep 1: Jordan approved PR 449, merged. Running load tests now — single-shard Redis is the expected bottleneck.\nSep 3: Load test peaks at 950K events/min before latency degrades. Root cause confirmed: Redis single-shard ceiling. Lab spike on cluster mode looks promising — see linked memo."
+        },
+        {
+          "id": 13,
+          "rank": 2,
+          "title": "Prism AWS migration — network topology decision",
+          "status": "in-prog",
+          "nextMeeting": "2026-09-01T15:00",
+          "carried": true,
+          "expanded": false,
+          "subtasks": [
+            { "text": "Network topology options", "link": "https://meridian.atlassian.net/wiki/spaces/ENG/pages/9300/Network+Topology+Options" },
+            { "text": "Decision: Transit Gateway (chosen over VPC peering)", "link": null },
+            { "text": "PLAT-3912 — TGW provisioning in progress", "link": "https://meridian.atlassian.net/browse/PLAT-3912" }
+          ],
+          "notes": "Sep 1: Sync with Jordan. Chose Transit Gateway over VPC peering — simpler for multi-account expansion (Prism will need 3 accounts by EOY; peering mesh doesn't scale).\nSep 3: TGW provisioned in dev account. Connectivity tests pass. Next: replicate to staging."
+        },
+        {
+          "id": 14,
+          "rank": 3,
+          "title": "Q3 Architecture review — present to leadership",
+          "status": "done",
+          "nextMeeting": "2026-09-02T09:00",
+          "carried": false,
+          "expanded": false,
+          "subtasks": [
+            { "text": "Final presentation", "link": "https://docs.google.com/presentation/d/1AbCd_example/edit" }
+          ],
+          "notes": "Sep 2: Went well. Leadership asked about dedup p99 latency target — our 20ms budget covered it. Migration roadmap approved at steering level."
+        },
+        {
+          "id": 15,
+          "rank": 4,
+          "title": "Write ADR — alert dedup fingerprinting strategy",
+          "status": "todo",
+          "nextMeeting": null,
+          "carried": false,
+          "expanded": false,
+          "subtasks": [
+            { "text": "ADR template", "link": "https://meridian.atlassian.net/wiki/spaces/ENG/pages/8100/ADR+Template" },
+            { "text": "Context: fingerprint collision analysis from W33 design review", "link": null },
+            { "text": "Decision: SHA-256 composite key (source, rule_id, host, 15min_window)", "link": null },
+            { "text": "Publish to team Confluence space", "link": "https://meridian.atlassian.net/wiki/spaces/ENG" }
+          ],
+          "notes": null
+        }
+      ]
+    }
+  ],
+  "notes": [
+    {
+      "id": 20,
+      "title": "Dedup engine — design decisions log",
+      "content": "Aug 12: Started circulating the dedup design doc. Key tension: throughput vs. dedup accuracy.\nAug 14: Sam raised fingerprint collision concern at 1M events/min. Need to re-examine the key composition.\nAug 17: Switched to SHA-256 composite key — (source, rule_id, host, 15min_window). Modelling shows collision probability < 1 in 10^18 at peak load. Problem solved.\nAug 19: Design locked after Morgan approved v4.\nSep 3: Load tests showing single-shard Redis bottleneck at 950K events/min. Lab spike on Redis Cluster mode looking good — 1.35M events/min at p99 18ms. Will adopt cluster mode for production.",
+      "createdAt": "2026-08-12",
+      "linkedTaskIds": [12],
+      "linkedLabTaskIds": [3]
+    },
+    {
+      "id": 21,
+      "title": "AWS migration — architecture notes",
+      "content": "Aug 19: Steering committee approved capacity plan: 3×r6i.4xlarge + ALB for ingestion tier. Target cutover W42.\nAug 20: Need to decide network topology before W37 — Jordan is the decision-maker.\nSep 1: Transit Gateway chosen over VPC peering. Rationale: TGW simplifies multi-account expansion. Prism will need 3 AWS accounts by EOY; VPC peering mesh gets unwieldy past 2-3 accounts.\nSep 3: TGW provisioned in dev. Connectivity tests pass. Staging next.",
+      "createdAt": "2026-08-19",
+      "linkedTaskIds": [13],
+      "linkedLabTaskIds": []
+    },
+    {
+      "id": 22,
+      "title": "Q3 retro notes",
+      "content": "Sep 2: Architecture review done. Leadership bought in on both dedup engine and migration roadmap.\n\tKey feedback from exec: dedup p99 target (20ms) is right — don't relax it.\n\tRisk flagged: Redis single-shard bottleneck could delay Phase 1. Cluster mode is the fix; adds ops complexity but unavoidable at this scale.\nSep 3: Starting to think about Q4 scope. Signal normalisation layer is the natural next piece after dedup — needed to handle multi-source ingestion properly.",
+      "createdAt": "2026-09-02",
+      "linkedTaskIds": [14],
+      "linkedLabTaskIds": []
+    }
+  ]
+}

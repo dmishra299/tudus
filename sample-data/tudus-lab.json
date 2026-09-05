@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "nextId": 6,
+  "settings": { "theme": "system", "dismissedCarry": {} },
+  "weeks": [
+    {
+      "ref": "2026-W35",
+      "wref": "W35",
+      "startDate": "2026-08-24",
+      "endDate": "2026-08-28",
+      "carriedFrom": null,
+      "tasks": [
+        {
+          "id": 1,
+          "rank": 1,
+          "title": "Read: DDIA Ch.9 — Consistency and Consensus",
+          "status": "done",
+          "nextMeeting": null,
+          "carried": false,
+          "expanded": true,
+          "subtasks": [
+            { "text": "Notes on linearisability vs. eventual consistency", "link": null },
+            { "text": "Sketch how Raft relates to our dedup window TTL design", "link": null }
+          ],
+          "notes": "Aug 25: The Raft section crystallised a lot about distributed consensus that had been fuzzy. The single-leader replication failure modes map directly to what we're doing with Redis as the dedup window — we're trusting a single primary for linearisability.\nAug 27: The 'READ COMMITTED' analogy for Redis Cluster is useful. Worth a spike to validate the latency budget holds under cluster mode."
+        },
+        {
+          "id": 2,
+          "rank": 2,
+          "title": "Spike: Redis Cluster mode for high-throughput dedup",
+          "status": "in-prog",
+          "nextMeeting": null,
+          "carried": false,
+          "expanded": true,
+          "subtasks": [
+            { "text": "Redis Cluster scaling docs", "link": "https://redis.io/docs/latest/operate/oss_and_stack/management/scaling/" },
+            { "text": "Hash slot distribution for composite dedup keys", "link": null },
+            { "text": "Benchmark: single-shard vs. 6-shard cluster at 1.2M events/min", "link": null }
+          ],
+          "notes": "Aug 28: Set up local 6-shard cluster. Hash slot assignment with {source} prefix keeps related keys co-located. Initial benchmark looks very promising — continuing in W36."
+        }
+      ]
+    },
+    {
+      "ref": "2026-W36",
+      "wref": "W36",
+      "startDate": "2026-08-31",
+      "endDate": "2026-09-04",
+      "carriedFrom": null,
+      "tasks": [
+        {
+          "id": 3,
+          "rank": 1,
+          "title": "Spike: Redis Cluster mode for high-throughput dedup",
+          "status": "in-prog",
+          "nextMeeting": null,
+          "carried": true,
+          "expanded": true,
+          "subtasks": [
+            { "text": "Redis Cluster scaling docs", "link": "https://redis.io/docs/latest/operate/oss_and_stack/management/scaling/" },
+            { "text": "Benchmark repo", "link": "https://github.com/meridian-corp/redis-dedup-spike" },
+            { "text": "Result: 6-shard cluster — 1.35M events/min at p99 18ms (target: 20ms)", "link": null },
+            { "text": "Write-up for PLAT-3918 spike ticket", "link": "https://meridian.atlassian.net/browse/PLAT-3918" }
+          ],
+          "notes": "Sep 1: 6-shard cluster breaks through the single-shard ceiling. 1.35M events/min at p99 18ms — comfortably inside the 20ms budget.\nSep 3: Spike write-up posted to PLAT-3918. Recommendation: adopt Redis Cluster for the production dedup engine. The {source}-prefixed hash slot strategy keeps related dedup keys co-located and avoids cross-slot scripting issues."
+        },
+        {
+          "id": 4,
+          "rank": 2,
+          "title": "Explore: eBPF for low-overhead host telemetry collection",
+          "status": "todo",
+          "nextMeeting": null,
+          "carried": false,
+          "expanded": true,
+          "subtasks": [
+            { "text": "eBPF intro and ecosystem overview", "link": "https://ebpf.io/get-started/" },
+            { "text": "Pixie — CNCF eBPF observability platform", "link": "https://px.dev" },
+            { "text": "Use case: replace agent-based telemetry in Prism sensors", "link": null }
+          ],
+          "notes": null
+        },
+        {
+          "id": 5,
+          "rank": 3,
+          "title": "Prototype: streaming normalisation layer (Kafka + Avro schema registry)",
+          "status": "todo",
+          "nextMeeting": null,
+          "carried": false,
+          "expanded": true,
+          "subtasks": [
+            { "text": "Confluent Avro schema registry docs", "link": "https://docs.confluent.io/platform/current/schema-registry/index.html" },
+            { "text": "Sketch: multi-source signal normalisation pipeline", "link": null },
+            { "text": "Evaluate: Apache Kafka vs Redpanda for this throughput", "link": "https://redpanda.com/blog/kafka-vs-redpanda" }
+          ],
+          "notes": "Sep 3: Q3 review flagged signal normalisation as the next major piece after dedup. Starting to think through the architecture. Avro + schema registry is the right call — schema evolution without breaking downstream consumers."
+        }
+      ]
+    }
+  ],
+  "notes": []
+}
