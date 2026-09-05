@@ -1,0 +1,71 @@
+/* ── Tokens ───────────────────────────────────────────── */
+:root {
+  --bg:         #EAEEF4; --surface:    #FFFFFF; --surface-2:  #F4F7FB;
+  --surface-3:  #EBF0F7; --border:     #CDD5E0; --border-sub: #E0E7F0;
+  --text-1:     #0C1A28; --text-2:     #52647A; --text-3:     #8BA0B8;
+  --accent:     #0070BA; --accent-lt:  #E0F0FA; --accent-dim: rgba(0,112,186,0.12);
+  --s-todo-bg:  #F1F5F9; --s-todo-txt: #60748A; --s-todo-dot: #94A3B8;
+  --s-wip-bg:   #EEF2FF; --s-wip-txt:  #4338CA; --s-wip-dot:  #818CF8;
+  --s-done-bg:  #ECFDF5; --s-done-txt: #047857; --s-done-dot: #34D399;
+  --carry-col:  #7C3AED; --carry-bg:   #F5F3FF; --carry-bdr:  rgba(124,58,237,0.2);
+  --dr-over-bg: #FEE2E2; --dr-over-txt:#B91C1C;
+  --dr-today-bg:#FFEDD5; --dr-today-txt:#C2410C;
+  --dr-soon-bg: #FEF9C3; --dr-soon-txt: #A16207;
+  --dr-norm-bg: #F1F5F9; --dr-norm-txt: #64748B;
+  --hdr-h: 56px; --r: 8px; --r-sm: 5px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:#080F1C; --surface:#101C2E; --surface-2:#0D1626; --surface-3:#0A1220;
+    --border:#1A2C44; --border-sub:#152438;
+    --text-1:#E2EDF8; --text-2:#7896B4; --text-3:#415E78;
+    --accent:#38BDF8; --accent-lt:#062030; --accent-dim:rgba(56,189,248,0.1);
+    --s-todo-bg:#131E2E; --s-todo-txt:#64748B; --s-todo-dot:#3D5268;
+    --s-wip-bg:#16184A; --s-wip-txt:#A5B4FC; --s-wip-dot:#818CF8;
+    --s-done-bg:#012818; --s-done-txt:#34D399; --s-done-dot:#34D399;
+    --carry-col:#A78BFA; --carry-bg:#130F2E; --carry-bdr:rgba(167,139,250,0.2);
+    --dr-over-bg:#3B0A0A; --dr-over-txt:#FCA5A5;
+    --dr-today-bg:#3B1500; --dr-today-txt:#FDBA74;
+    --dr-soon-bg:#2C1E00; --dr-soon-txt:#FCD34D;
+    --dr-norm-bg:#131E2E; --dr-norm-txt:#64748B;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:#080F1C; --surface:#101C2E; --surface-2:#0D1626; --surface-3:#0A1220;
+  --border:#1A2C44; --border-sub:#152438;
+  --text-1:#E2EDF8; --text-2:#7896B4; --text-3:#415E78;
+  --accent:#38BDF8; --accent-lt:#062030; --accent-dim:rgba(56,189,248,0.1);
+  --s-todo-bg:#131E2E; --s-todo-txt:#64748B; --s-todo-dot:#3D5268;
+  --s-wip-bg:#16184A; --s-wip-txt:#A5B4FC; --s-wip-dot:#818CF8;
+  --s-done-bg:#012818; --s-done-txt:#34D399; --s-done-dot:#34D399;
+  --carry-col:#A78BFA; --carry-bg:#130F2E; --carry-bdr:rgba(167,139,250,0.2);
+  --dr-over-bg:#3B0A0A; --dr-over-txt:#FCA5A5;
+  --dr-today-bg:#3B1500; --dr-today-txt:#FDBA74;
+  --dr-soon-bg:#2C1E00; --dr-soon-txt:#FCD34D;
+  --dr-norm-bg:#131E2E; --dr-norm-txt:#64748B;
+}
+/* ── Lab context — accent shifts to emerald ───────────── */
+[data-ctx="lab"]{--accent:#059669;--accent-lt:#D1FAE5;--accent-dim:rgba(5,150,105,.12)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"])[data-ctx="lab"]{--accent:#34D399;--accent-lt:#022C22;--accent-dim:rgba(52,211,153,.12)}}
+:root[data-theme="dark"][data-ctx="lab"]{--accent:#34D399;--accent-lt:#022C22;--accent-dim:rgba(52,211,153,.12)}
+/* Fixed work palette — context-independent, used in Notes view for Work-linked memos */
+:root{--work-accent:#0070BA;--work-accent-lt:#E0F0FA;--work-accent-dim:rgba(0,112,186,.12)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--work-accent:#38BDF8;--work-accent-lt:#062030;--work-accent-dim:rgba(56,189,248,.1)}}
+:root[data-theme="dark"]{--work-accent:#38BDF8;--work-accent-lt:#062030;--work-accent-dim:rgba(56,189,248,.1)}
+/* Fixed lab palette — context-independent, used in Notes view for Lab-linked memos */
+:root{--lab-accent:#059669;--lab-accent-lt:#D1FAE5;--lab-accent-dim:rgba(5,150,105,.12)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--lab-accent:#34D399;--lab-accent-lt:#022C22;--lab-accent-dim:rgba(52,211,153,.12)}}
+:root[data-theme="dark"]{--lab-accent:#34D399;--lab-accent-lt:#022C22;--lab-accent-dim:rgba(52,211,153,.12)}
+/* Notes view — accent shifts to amber */
+[data-view="notes"]{--accent:#D97706;--accent-lt:#FEF3C7;--accent-dim:rgba(217,119,6,.12)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"])[data-view="notes"]{--accent:#FCD34D;--accent-lt:#2C1400;--accent-dim:rgba(252,211,77,.1)}}
+:root[data-theme="dark"][data-view="notes"]{--accent:#FCD34D;--accent-lt:#2C1400;--accent-dim:rgba(252,211,77,.1)}
+
+/* ── Reset ────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px;-webkit-font-smoothing:antialiased}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text-1);min-height:100vh;line-height:1.5}
+button{cursor:pointer;border:none;background:none;font-family:inherit;font-size:inherit;color:inherit}
+input,textarea{font-family:inherit;font-size:inherit;color:inherit}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}

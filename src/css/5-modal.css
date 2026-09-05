@@ -1,0 +1,33 @@
+/* ── Modal ────────────────────────────────────────────── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.28);backdrop-filter:blur(3px);z-index:200;display:flex;align-items:center;justify-content:center}
+.modal{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:24px;width:468px;max-width:calc(100vw - 32px);box-shadow:0 28px 72px rgba(0,0,0,.18)}
+.modal-title{font-size:14.5px;font-weight:600;margin-bottom:20px}
+.fgrp{margin-bottom:15px}
+.flabel{display:block;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:5px}
+.finput,.ftextarea{width:100%;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;font-size:13px;outline:none;transition:border-color .15s}
+.finput:focus,.ftextarea:focus{border-color:var(--accent)}
+.ftextarea{resize:vertical;min-height:68px}
+#f-subs{min-height:140px}
+.modal-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+.btn-cancel{height:30px;padding:0 13px;border-radius:var(--r-sm);font-size:12.5px;color:var(--text-2);background:var(--surface-2);border:1.5px solid var(--border);transition:background .1s}
+.btn-cancel:hover{background:var(--border)}
+
+/* ── Notes hover tooltip ──────────────────────────────── */
+#notes-tooltip{position:fixed;z-index:500;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);box-shadow:0 8px 32px rgba(0,0,0,.18);padding:14px 16px;max-width:500px;max-height:calc(100vh - 48px);overflow-y:auto;font-size:12.5px;line-height:1.65;color:var(--text-1);white-space:pre-wrap;word-break:break-word;pointer-events:none;opacity:0;transition:opacity .15s ease}
+#notes-tooltip.show{opacity:1;pointer-events:auto}
+.ntt-date{font-weight:700;color:var(--accent);opacity:.9}
+
+/* ── Notes panel (right strip on card) ───────────────── */
+.card-notes-panel{width:172px;flex-shrink:0;border-left:1px solid var(--border-sub);padding:10px 12px;display:flex;flex-direction:column;gap:5px;cursor:pointer;transition:background .12s;min-width:0}
+.card-notes-panel:hover{background:var(--surface-2)}
+.cnp-label{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3)}
+.cnp-preview{font-size:11.5px;line-height:1.48;color:var(--text-2);overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;word-break:break-word;white-space:pre-wrap}
+[data-ctx="lab"] .card-notes-panel{width:210px}
+[data-ctx="lab"] .cnp-preview{-webkit-line-clamp:6}
+/* Notes modal */
+.notes-overlay{position:fixed;inset:0;background:rgba(0,0,0,.28);backdrop-filter:blur(3px);z-index:200;display:flex;align-items:center;justify-content:center}
+.notes-modal{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:24px;width:520px;max-width:calc(100vw - 32px);box-shadow:0 28px 72px rgba(0,0,0,.18)}
+.notes-context{font-size:11.5px;color:var(--text-3);margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border-sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.notes-textarea{width:100%;min-height:180px;resize:vertical;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;font-size:13px;line-height:1.6;outline:none;transition:border-color .15s;color:var(--text-1)}
+.notes-textarea:focus{border-color:var(--accent)}
+.notes-char-count{font-size:10.5px;color:var(--text-3);text-align:right;margin-top:5px}

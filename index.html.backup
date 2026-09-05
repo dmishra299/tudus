@@ -1,0 +1,1653 @@
+<title>tudus</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+/* ── Tokens ───────────────────────────────────────────── */
+:root {
+  --bg:         #EAEEF4; --surface:    #FFFFFF; --surface-2:  #F4F7FB;
+  --surface-3:  #EBF0F7; --border:     #CDD5E0; --border-sub: #E0E7F0;
+  --text-1:     #0C1A28; --text-2:     #52647A; --text-3:     #8BA0B8;
+  --accent:     #0070BA; --accent-lt:  #E0F0FA; --accent-dim: rgba(0,112,186,0.12);
+  --s-todo-bg:  #F1F5F9; --s-todo-txt: #60748A; --s-todo-dot: #94A3B8;
+  --s-wip-bg:   #EEF2FF; --s-wip-txt:  #4338CA; --s-wip-dot:  #818CF8;
+  --s-done-bg:  #ECFDF5; --s-done-txt: #047857; --s-done-dot: #34D399;
+  --carry-col:  #7C3AED; --carry-bg:   #F5F3FF; --carry-bdr:  rgba(124,58,237,0.2);
+  --dr-over-bg: #FEE2E2; --dr-over-txt:#B91C1C;
+  --dr-today-bg:#FFEDD5; --dr-today-txt:#C2410C;
+  --dr-soon-bg: #FEF9C3; --dr-soon-txt: #A16207;
+  --dr-norm-bg: #F1F5F9; --dr-norm-txt: #64748B;
+  --hdr-h: 56px; --r: 8px; --r-sm: 5px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:#080F1C; --surface:#101C2E; --surface-2:#0D1626; --surface-3:#0A1220;
+    --border:#1A2C44; --border-sub:#152438;
+    --text-1:#E2EDF8; --text-2:#7896B4; --text-3:#415E78;
+    --accent:#38BDF8; --accent-lt:#062030; --accent-dim:rgba(56,189,248,0.1);
+    --s-todo-bg:#131E2E; --s-todo-txt:#64748B; --s-todo-dot:#3D5268;
+    --s-wip-bg:#16184A; --s-wip-txt:#A5B4FC; --s-wip-dot:#818CF8;
+    --s-done-bg:#012818; --s-done-txt:#34D399; --s-done-dot:#34D399;
+    --carry-col:#A78BFA; --carry-bg:#130F2E; --carry-bdr:rgba(167,139,250,0.2);
+    --dr-over-bg:#3B0A0A; --dr-over-txt:#FCA5A5;
+    --dr-today-bg:#3B1500; --dr-today-txt:#FDBA74;
+    --dr-soon-bg:#2C1E00; --dr-soon-txt:#FCD34D;
+    --dr-norm-bg:#131E2E; --dr-norm-txt:#64748B;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:#080F1C; --surface:#101C2E; --surface-2:#0D1626; --surface-3:#0A1220;
+  --border:#1A2C44; --border-sub:#152438;
+  --text-1:#E2EDF8; --text-2:#7896B4; --text-3:#415E78;
+  --accent:#38BDF8; --accent-lt:#062030; --accent-dim:rgba(56,189,248,0.1);
+  --s-todo-bg:#131E2E; --s-todo-txt:#64748B; --s-todo-dot:#3D5268;
+  --s-wip-bg:#16184A; --s-wip-txt:#A5B4FC; --s-wip-dot:#818CF8;
+  --s-done-bg:#012818; --s-done-txt:#34D399; --s-done-dot:#34D399;
+  --carry-col:#A78BFA; --carry-bg:#130F2E; --carry-bdr:rgba(167,139,250,0.2);
+  --dr-over-bg:#3B0A0A; --dr-over-txt:#FCA5A5;
+  --dr-today-bg:#3B1500; --dr-today-txt:#FDBA74;
+  --dr-soon-bg:#2C1E00; --dr-soon-txt:#FCD34D;
+  --dr-norm-bg:#131E2E; --dr-norm-txt:#64748B;
+}
+/* ── Lab context — accent shifts to purple ────────────── */
+[data-ctx="lab"]{--accent:#059669;--accent-lt:#D1FAE5;--accent-dim:rgba(5,150,105,.12)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"])[data-ctx="lab"]{--accent:#34D399;--accent-lt:#022C22;--accent-dim:rgba(52,211,153,.12)}}
+:root[data-theme="dark"][data-ctx="lab"]{--accent:#34D399;--accent-lt:#022C22;--accent-dim:rgba(52,211,153,.12)}
+
+/* ── Reset ────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px;-webkit-font-smoothing:antialiased}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text-1);min-height:100vh;line-height:1.5}
+button{cursor:pointer;border:none;background:none;font-family:inherit;font-size:inherit;color:inherit}
+input,textarea{font-family:inherit;font-size:inherit;color:inherit}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ── Header ───────────────────────────────────────────── */
+.hdr{position:fixed;top:0;left:0;right:0;height:var(--hdr-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;z-index:100}
+.app-name{font-family:ui-monospace,'Cascadia Code','JetBrains Mono',Menlo,monospace;font-size:15px;font-weight:700;letter-spacing:-0.03em;color:var(--text-1);user-select:none;flex-shrink:0;padding-right:16px;border-right:1px solid var(--border)}
+.app-name em{color:var(--accent);font-style:normal}
+
+.hdr-nav{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+
+.nav-btn{height:36px;min-width:42px;padding:0 10px;border-radius:var(--r);border:1.5px solid var(--border);background:var(--surface-2);color:var(--text-2);font-size:16px;font-family:ui-monospace,monospace;display:flex;align-items:center;justify-content:center;transition:background .12s,border-color .12s,color .12s;flex-shrink:0}
+.nav-btn:hover:not(:disabled){background:var(--accent-lt);border-color:var(--accent);color:var(--accent)}
+.nav-btn:disabled{opacity:.3;cursor:default}
+
+.period-wrap{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.period-wref{font-family:ui-monospace,monospace;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3)}
+.period-label{font-size:14px;font-weight:500;color:var(--text-1);white-space:nowrap}
+.period-wrap.is-past .period-label{color:var(--text-3)}
+.curr-badge{font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--s-done-txt);background:var(--s-done-bg);padding:2px 7px;border-radius:10px}
+
+.btn-thisweek{height:30px;padding:0 12px;border-radius:var(--r-sm);font-size:12px;font-weight:600;border:1.5px solid var(--accent);color:var(--accent);background:transparent;transition:background .12s;flex-shrink:0}
+.btn-thisweek:hover{background:var(--accent-lt)}
+.btn-thisweek.on-curr{border-color:var(--s-done-dot);color:var(--s-done-txt);font-weight:500}
+.btn-thisweek.on-curr:hover{background:var(--s-done-bg)}
+.week-jump-input{height:30px;padding:0 8px;border-radius:var(--r-sm);font-size:12px;border:1.5px solid var(--border);background:var(--surface);color:var(--text-1);width:80px;outline:none;transition:border-color .12s;flex-shrink:0}
+.week-jump-input:focus{border-color:var(--accent)}
+.week-jump-input::placeholder{color:var(--text-3)}
+
+.mo-nav-wrap{display:flex;flex-direction:column;gap:1px}
+.mo-nav-title{font-size:14px;font-weight:500;color:var(--text-1);white-space:nowrap}
+.mo-nav-meta{font-size:11px;color:var(--text-3)}
+
+/* ── Header right ─────────────────────────────────────── */
+.hdr-right{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0}
+.view-seg{display:flex;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:2px;gap:2px}
+.seg-btn{height:26px;padding:0 13px;border-radius:3px;font-size:12.5px;color:var(--text-2);transition:background .1s,color .1s,box-shadow .1s}
+.seg-btn:hover{color:var(--text-1)}
+.seg-btn.active{background:var(--surface);color:var(--text-1);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.ctx-seg{display:flex;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:2px;gap:2px}
+.ctx-btn{height:26px;padding:0 10px;border-radius:3px;font-size:12px;font-weight:500;color:var(--text-2);transition:background .12s,color .12s}
+.ctx-btn:hover{color:var(--text-1)}
+.ctx-btn.active{background:var(--accent);color:#fff;font-weight:600}
+.hdiv{width:1px;height:18px;background:var(--border);flex-shrink:0}
+.btn-ghost{height:30px;padding:0 10px;border-radius:var(--r-sm);font-size:12.5px;color:var(--text-2);transition:background .12s,color .12s}
+.btn-ghost:hover{background:var(--surface-2);color:var(--text-1)}
+.btn-ghost.active{background:var(--accent-lt);color:var(--accent)}
+.vo-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:10.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;background:var(--surface-2);color:var(--text-3);border:1px solid var(--border)}
+.btn-add{height:30px;padding:0 14px;border-radius:var(--r-sm);font-size:12.5px;font-weight:500;background:var(--accent);color:#fff;transition:opacity .12s}
+.btn-add:hover{opacity:.84}
+.kbd{font-family:ui-monospace,monospace;font-size:10px;padding:1px 4px;border:1px solid rgba(255,255,255,.3);border-radius:3px;opacity:.75;vertical-align:middle;margin-left:3px}
+
+/* ── Main ─────────────────────────────────────────────── */
+.main{margin-top:var(--hdr-h);padding:22px 22px 72px;max-width:860px;margin-left:auto;margin-right:auto}
+
+/* ── Carry banner ─────────────────────────────────────── */
+.carry-banner{display:flex;align-items:center;gap:8px;padding:10px 14px;margin-bottom:16px;background:var(--carry-bg);border:1px solid var(--carry-bdr);border-radius:var(--r);font-size:13px;color:var(--carry-col)}
+.carry-banner strong{font-weight:600}
+.carry-dismiss{margin-left:auto;font-size:11.5px;color:var(--text-3);flex-shrink:0;transition:color .1s}
+.carry-dismiss:hover{color:var(--text-1)}
+
+/* ── Drag indicator ───────────────────────────────────── */
+.drag-ind{height:2px;border-radius:2px;background:var(--accent);margin:2px 0;pointer-events:none;flex-shrink:0;box-shadow:0 0 6px var(--accent-dim)}
+
+/* ── Task cards ───────────────────────────────────────── */
+.task-cards{display:flex;flex-direction:column;gap:9px}
+.task-card{background:var(--surface);border:1.5px solid var(--border-sub);border-radius:var(--r);display:flex;align-items:stretch;transition:border-color .15s,box-shadow .15s;position:relative}
+.task-card:hover{border-color:var(--border);box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.task-card.is-done{opacity:.5}
+.task-card.is-done .card-title{text-decoration:line-through;color:var(--text-2)}
+.task-card.is-ghost{opacity:.28;pointer-events:none}
+@keyframes taskPulse{0%{box-shadow:0 0 0 0 var(--accent-dim);background:var(--surface)}40%{box-shadow:0 0 0 3px var(--accent);background:var(--accent-lt)}100%{box-shadow:0 0 0 0 var(--accent-dim);background:var(--surface)}}
+.card-highlight{animation:taskPulse 1.8s ease forwards}
+
+.card-grip-col{display:flex;flex-direction:column;align-items:center;padding:13px 0 13px 12px;gap:8px;cursor:grab;flex-shrink:0}
+.card-grip-col:active{cursor:grabbing}
+.grip{font-size:14px;line-height:1;font-family:ui-monospace,monospace;color:var(--text-3);opacity:.3;transition:opacity .15s;user-select:none}
+.task-card:hover .grip{opacity:.7}
+.card-num{font-family:ui-monospace,monospace;font-size:10px;font-weight:700;color:var(--text-3);background:var(--surface-2);width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--border-sub);font-variant-numeric:tabular-nums;flex-shrink:0}
+
+.card-body{flex:1;padding:13px 15px 13px 10px;min-width:0;display:flex;flex-direction:column}
+.card-head{display:flex;align-items:flex-start;gap:6px}
+.exp-btn{width:16px;height:16px;border-radius:3px;display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:9px;font-family:ui-monospace,monospace;flex-shrink:0;margin-top:3px;transition:background .1s,color .1s}
+.exp-btn:hover{background:var(--border);color:var(--text-1)}
+.card-title{font-size:14px;line-height:1.46;color:var(--text-1);flex:1;min-width:0}
+.carried-tag{display:inline-flex;align-items:center;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--carry-col);flex-shrink:0;margin-top:3px;opacity:.9}
+
+.subtasks{margin-top:7px;display:flex;flex-direction:column;gap:3px;padding-left:22px}
+.subtask{display:flex;align-items:baseline;gap:5px;font-size:12px;color:var(--text-2);line-height:1.4}
+.st-arr{font-family:ui-monospace,monospace;font-size:10px;color:var(--text-3);flex-shrink:0}
+.subtask a{font-size:12px}
+
+.card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:11px;padding-top:10px;border-top:1px solid var(--border-sub);gap:10px}
+.meet-section{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.meet-date{font-family:ui-monospace,'Cascadia Code',monospace;font-size:11.5px;font-variant-numeric:tabular-nums;color:var(--text-2)}
+.meet-none{font-size:12px;color:var(--text-3)}
+.meet-clickable{cursor:pointer;border-radius:4px;padding:2px 5px;margin:-2px -5px;transition:background .12s}
+.meet-clickable:hover{background:var(--surface-2)}
+.quick-date-pop{position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:10px 12px;z-index:500;display:flex;flex-direction:column;gap:9px;min-width:216px}
+.quick-date-row{display:flex;gap:6px}
+.quick-date-finput{font-size:12.5px;border:1px solid var(--border);border-radius:5px;background:var(--surface);color:var(--text-1);padding:4px 7px;outline:none;min-width:0;flex:1}
+.quick-date-finput:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-dim)}
+.quick-date-time{flex:none;width:86px}
+.quick-date-actions{display:flex;justify-content:space-between;gap:6px}
+.quick-date-ok{font-size:12px;font-weight:600;padding:4px 14px;border-radius:5px;background:var(--accent);color:#fff;border:none;cursor:pointer}
+.quick-date-ok:hover{opacity:.85}
+.quick-date-clr{font-size:12px;padding:4px 10px;border-radius:5px;background:transparent;color:var(--text-2);border:1px solid var(--border);cursor:pointer}
+.quick-date-clr:hover{background:var(--surface-2)}
+.dr{font-family:ui-monospace,monospace;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap}
+.dr-over{background:var(--dr-over-bg);color:var(--dr-over-txt)}
+.dr-today{background:var(--dr-today-bg);color:var(--dr-today-txt)}
+.dr-soon{background:var(--dr-soon-bg);color:var(--dr-soon-txt)}
+.dr-norm{background:var(--dr-norm-bg);color:var(--dr-norm-txt)}
+
+.s-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:500;cursor:pointer;white-space:nowrap;transition:opacity .12s;flex-shrink:0}
+.s-pill:hover:not(:disabled){opacity:.7}
+.s-pill:disabled{cursor:default}
+.s-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.s-pill.todo{background:var(--s-todo-bg);color:var(--s-todo-txt)}.s-pill.todo .s-dot{background:var(--s-todo-dot)}
+.s-pill.in-prog{background:var(--s-wip-bg);color:var(--s-wip-txt)}.s-pill.in-prog .s-dot{background:var(--s-wip-dot)}
+.s-pill.done{background:var(--s-done-bg);color:var(--s-done-txt)}.s-pill.done .s-dot{background:var(--s-done-dot)}
+
+/* ── Kebab menu ───────────────────────────────────────── */
+.card-menu-wrap{position:relative;flex-shrink:0}
+.card-menu-btn{width:26px;height:26px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:var(--text-3);opacity:0;transition:opacity .15s,background .1s}
+.task-card:hover .card-menu-btn{opacity:1}
+.card-menu-btn:hover{background:var(--surface-2);color:var(--text-2)}
+.card-menu-btn.open{opacity:1;background:var(--surface-3);color:var(--text-1)}
+.card-dropdown{position:absolute;top:calc(100% + 4px);right:0;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);box-shadow:0 8px 32px rgba(0,0,0,.14);min-width:150px;z-index:200;overflow:hidden;animation:fadeIn .1s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.dd-item{display:flex;align-items:center;gap:8px;width:100%;padding:9px 13px;font-size:13px;color:var(--text-1);text-align:left;transition:background .1s}
+.dd-item:hover{background:var(--surface-2)}
+.dd-sep{height:1px;background:var(--border-sub);margin:3px 0}
+.dd-danger{color:#DC2626}
+.dd-danger:hover{background:var(--dr-over-bg)}
+
+/* ── Empty state ──────────────────────────────────────── */
+.empty-state{padding:64px 0;text-align:center;color:var(--text-3)}
+.empty-glyph{font-size:32px;margin-bottom:10px;opacity:.2}
+.empty-state p{font-size:13px;margin-bottom:20px}
+
+/* ── Month view ───────────────────────────────────────── */
+.week-block{background:var(--surface);border:1.5px solid var(--border-sub);border-radius:var(--r);margin-bottom:8px;overflow:hidden}
+.wb-hdr{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;transition:background .1s;user-select:none}
+.wb-hdr:hover{background:var(--surface-2)}
+.wb-hdr.open{border-bottom:1px solid var(--border-sub)}
+.wb-wref{font-family:ui-monospace,monospace;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);width:26px;flex-shrink:0}
+.wb-label{font-size:13.5px;font-weight:500;color:var(--text-1);flex:1}
+.wb-curr{font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--s-done-txt);background:var(--s-done-bg);padding:1px 6px;border-radius:8px}
+.wb-prog{display:flex;align-items:center;gap:8px}
+.wb-bar{width:60px;height:4px;background:var(--surface-3);border-radius:2px;overflow:hidden}
+.wb-fill{height:100%;background:var(--s-done-dot);border-radius:2px}
+.wb-count{font-family:ui-monospace,monospace;font-size:11px;color:var(--text-3);font-variant-numeric:tabular-nums;min-width:34px;text-align:right}
+.wb-chev{font-size:10px;color:var(--text-3);font-family:ui-monospace,monospace;transition:transform .2s;flex-shrink:0}
+.wb-chev.open{transform:rotate(90deg)}
+.wb-body{display:none}
+.wb-body.open{display:block}
+.mrow{display:grid;grid-template-columns:22px 1fr 96px 80px 108px;align-items:center;padding:8px 16px;gap:8px;transition:background .1s;cursor:pointer}
+.mrow:hover{background:var(--surface-2)}
+.mrow.is-done{opacity:.45}
+.mrow.is-done .mr-title{text-decoration:line-through}
+.mr-rank{font-family:ui-monospace,monospace;font-size:10.5px;color:var(--text-3);text-align:center}
+.mr-title{font-size:13px;color:var(--text-1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mr-meet{font-family:ui-monospace,monospace;font-size:11px;color:var(--text-3);font-variant-numeric:tabular-nums}
+.mr-dr{font-family:ui-monospace,monospace;font-size:10.5px;font-weight:700}
+
+/* ── Modal ────────────────────────────────────────────── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.28);backdrop-filter:blur(3px);z-index:200;display:flex;align-items:center;justify-content:center}
+.modal{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:24px;width:468px;max-width:calc(100vw - 32px);box-shadow:0 28px 72px rgba(0,0,0,.18)}
+.modal-title{font-size:14.5px;font-weight:600;margin-bottom:20px}
+.fgrp{margin-bottom:15px}
+.flabel{display:block;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:5px}
+.finput,.ftextarea{width:100%;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:8px 10px;font-size:13px;outline:none;transition:border-color .15s}
+.finput:focus,.ftextarea:focus{border-color:var(--accent)}
+.ftextarea{resize:vertical;min-height:68px}
+#f-subs{min-height:140px}
+.modal-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+.btn-cancel{height:30px;padding:0 13px;border-radius:var(--r-sm);font-size:12.5px;color:var(--text-2);background:var(--surface-2);border:1.5px solid var(--border);transition:background .1s}
+.btn-cancel:hover{background:var(--border)}
+
+/* ── Notes hover tooltip ──────────────────────────────── */
+#notes-tooltip{position:fixed;z-index:500;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);box-shadow:0 8px 32px rgba(0,0,0,.18);padding:14px 16px;max-width:500px;max-height:calc(100vh - 48px);overflow-y:auto;font-size:12.5px;line-height:1.65;color:var(--text-1);white-space:pre-wrap;word-break:break-word;pointer-events:none;opacity:0;transition:opacity .15s ease}
+#notes-tooltip.show{opacity:1;pointer-events:auto}
+.ntt-date{font-weight:700;color:var(--accent);opacity:.9}
+
+/* ── Notes panel (right strip on card) ───────────────── */
+.card-notes-panel{width:172px;flex-shrink:0;border-left:1px solid var(--border-sub);padding:10px 12px;display:flex;flex-direction:column;gap:5px;cursor:pointer;transition:background .12s;min-width:0}
+.card-notes-panel:hover{background:var(--surface-2)}
+.cnp-label{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3)}
+.cnp-preview{font-size:11.5px;line-height:1.48;color:var(--text-2);overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;word-break:break-word;white-space:pre-wrap}
+[data-ctx="lab"] .card-notes-panel{width:210px}
+[data-ctx="lab"] .cnp-preview{-webkit-line-clamp:6}
+/* Notes modal */
+.notes-overlay{position:fixed;inset:0;background:rgba(0,0,0,.28);backdrop-filter:blur(3px);z-index:200;display:flex;align-items:center;justify-content:center}
+.notes-modal{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:24px;width:520px;max-width:calc(100vw - 32px);box-shadow:0 28px 72px rgba(0,0,0,.18)}
+.notes-context{font-size:11.5px;color:var(--text-3);margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border-sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.notes-textarea{width:100%;min-height:180px;resize:vertical;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;font-size:13px;line-height:1.6;outline:none;transition:border-color .15s;color:var(--text-1)}
+.notes-textarea:focus{border-color:var(--accent)}
+.notes-char-count{font-size:10.5px;color:var(--text-3);text-align:right;margin-top:5px}
+
+/* ── Toast ────────────────────────────────────────────── */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--text-1);color:var(--bg);padding:9px 16px;border-radius:var(--r);font-size:12.5px;z-index:400;pointer-events:none;transition:transform .22s ease;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+.hidden{display:none !important}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none !important}}
+</style>
+
+<div id="app">
+  <header class="hdr">
+    <div class="app-name">tu<em>·</em>dus</div>
+    <div class="ctx-seg">
+      <button class="ctx-btn active" id="btn-ctx-work">Work</button>
+      <button class="ctx-btn"        id="btn-ctx-lab">Lab</button>
+    </div>
+
+    <!-- Week nav -->
+    <div class="hdr-nav" id="nav-week">
+      <button class="nav-btn" id="btn-prev">←</button>
+      <div class="period-wrap" id="period-wrap">
+        <span class="period-wref" id="p-wref"></span>
+        <span class="period-label" id="p-label"></span>
+        <span class="curr-badge hidden" id="curr-badge">current</span>
+      </div>
+      <button class="nav-btn" id="btn-next">→</button>
+      <button class="btn-thisweek" id="btn-thisweek">Current Week</button>
+      <input class="week-jump-input" id="week-jump-input" type="text" placeholder="Go to W…" maxlength="10" title="Jump to week: type W33 or 2026-W33 and press Enter">
+    </div>
+
+    <!-- Month nav -->
+    <div class="hdr-nav hidden" id="nav-month">
+      <button class="nav-btn" id="btn-mo-prev">←</button>
+      <div class="mo-nav-wrap">
+        <span class="mo-nav-title" id="mo-nav-title"></span>
+        <span class="mo-nav-meta"  id="mo-nav-meta"></span>
+      </div>
+      <button class="nav-btn" id="btn-mo-next">→</button>
+      <button class="btn-thisweek" id="btn-curr-month">Current Month</button>
+    </div>
+
+    <div class="hdr-right">
+      <div class="view-seg">
+        <button class="seg-btn active" id="btn-v-week">Week</button>
+        <button class="seg-btn"        id="btn-v-month">Month</button>
+      </div>
+      <div class="hdiv"></div>
+      <button class="btn-ghost" id="btn-viewonly">View Only</button>
+      <div class="hdiv"></div>
+      <button class="btn-ghost" id="btn-theme" title="Toggle theme">◑</button>
+      <button class="btn-ghost" id="btn-export" title="Export backup">⬇</button>
+      <button class="btn-ghost" id="btn-import" title="Import backup">⬆</button>
+      <div class="hdiv"></div>
+      <span  class="vo-chip hidden" id="vo-chip">● View Only</span>
+      <button class="btn-add hidden" id="btn-add">+ Task<span class="kbd">⌘K</span></button>
+    </div>
+  </header>
+
+  <main class="main">
+    <div id="week-view">
+      <div class="carry-banner hidden" id="migrate-banner"></div>
+      <div class="carry-banner hidden" id="carry-banner"></div>
+      <div class="task-cards" id="task-cards"></div>
+    </div>
+    <div id="month-view" class="hidden">
+      <div id="week-blocks"></div>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div class="overlay hidden" id="overlay">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-title" id="modal-title"></div>
+      <div class="fgrp">
+        <label class="flabel" for="f-title">Task title</label>
+        <input class="finput" id="f-title" type="text" placeholder="What needs to be done?">
+      </div>
+      <div class="fgrp">
+        <label class="flabel" for="f-subs">Sub-items / links <span style="font-weight:400;text-transform:none;letter-spacing:0">(one per line)</span></label>
+        <textarea class="ftextarea" id="f-subs" placeholder="Context note&#10;https://jira/TICKET-123 Label for link"></textarea>
+      </div>
+      <div class="fgrp">
+        <label class="flabel">Next action</label>
+        <div style="display:flex;gap:8px">
+          <input class="finput" id="f-meet-date" type="date" style="flex:1">
+          <input class="finput" id="f-meet-time" type="time" style="width:110px">
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn-cancel" id="btn-mo-cancel">Cancel</button>
+        <button type="button" class="btn-add"    id="btn-mo-save" style="height:30px;padding:0 14px">Add Task</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notes modal -->
+  <div class="notes-overlay hidden" id="notes-overlay">
+    <div class="notes-modal" role="dialog" aria-modal="true">
+      <div class="modal-title" id="notes-modal-title">Notes</div>
+      <div class="notes-context" id="notes-context"></div>
+      <textarea class="notes-textarea" id="notes-textarea" placeholder="Add your notes here…"></textarea>
+      <div class="notes-char-count" id="notes-char-count"></div>
+      <div class="modal-foot">
+        <button type="button" class="btn-cancel" id="btn-notes-clear" style="margin-right:auto">Clear</button>
+        <button type="button" class="btn-cancel" id="btn-notes-cancel">Cancel</button>
+        <button type="button" class="btn-add"    id="btn-notes-save" style="height:30px;padding:0 14px">Save Notes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden import input -->
+  <input type="file" id="file-input" accept=".json" class="hidden">
+  <div class="toast" id="toast"></div>
+  <div id="notes-tooltip"></div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// 1. DATE ENGINE
+// ════════════════════════════════════════════════════════
+function toISO(d) { return d.toISOString().slice(0, 10); }
+
+function getISOWeekData(date) {
+  const d   = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dow = d.getUTCDay() || 7;
+  const thu = new Date(d); thu.setUTCDate(d.getUTCDate() + 4 - dow);
+  const isoYear = thu.getUTCFullYear();
+  const jan1    = new Date(Date.UTC(isoYear, 0, 1));
+  const weekNum = Math.ceil(((thu - jan1) / 864e5 + 1) / 7);
+  const mon     = new Date(d); mon.setUTCDate(d.getUTCDate() - (dow - 1));
+  const fri     = new Date(mon); fri.setUTCDate(mon.getUTCDate() + 4);
+  const wn      = String(weekNum).padStart(2, '0');
+  return { isoYear, weekNum, ref: `${isoYear}-W${wn}`, wref: `W${wn}`, startDate: toISO(mon), endDate: toISO(fri) };
+}
+
+function weekLabelFull(sd, ed) {
+  const s = new Date(sd + 'T00:00:00'), e = new Date(ed + 'T00:00:00');
+  const sm = s.toLocaleString('en-US', {month:'short'}), em = e.toLocaleString('en-US', {month:'short'});
+  if (sm === em) return `${sm} ${s.getDate()} – ${e.getDate()}, ${s.getFullYear()}`;
+  return `${sm} ${s.getDate()} – ${em} ${e.getDate()}, ${e.getFullYear()}`;
+}
+function weekLabelShort(sd, ed) {
+  const s = new Date(sd + 'T00:00:00'), e = new Date(ed + 'T00:00:00');
+  const sm = s.toLocaleString('en-US', {month:'short'}), em = e.toLocaleString('en-US', {month:'short'});
+  return sm === em ? `${sm} ${s.getDate()} – ${e.getDate()}` : `${sm} ${s.getDate()} – ${em} ${e.getDate()}`;
+}
+function monthLabel(year, month) { // month 1-indexed
+  return new Date(year, month - 1, 1).toLocaleString('en-US', {month:'long', year:'numeric'});
+}
+
+function offsetWeekData(ref, delta) {
+  const [yearStr, wStr] = ref.split('-W');
+  const year = parseInt(yearStr), weekNum = parseInt(wStr);
+  const jan4  = new Date(Date.UTC(year, 0, 4));
+  const dow4  = jan4.getUTCDay() || 7;
+  const w1Mon = new Date(jan4); w1Mon.setUTCDate(jan4.getUTCDate() - (dow4 - 1));
+  const tMon  = new Date(w1Mon); tMon.setUTCDate(w1Mon.getUTCDate() + (weekNum - 1 + delta) * 7);
+  return getISOWeekData(tMon);
+}
+
+function weeksInMonth(year, month) { // month 1-indexed
+  const m   = String(month).padStart(2, '0'), y = String(year);
+  const ms  = `${y}-${m}-01`;
+  const ld  = new Date(year, month, 0).getDate();
+  const me  = `${y}-${m}-${String(ld).padStart(2,'0')}`;
+  return store.weeks.filter(w => w.startDate <= me && w.endDate >= ms)
+    .sort((a, b) => a.startDate.localeCompare(b.startDate));
+}
+
+// ════════════════════════════════════════════════════════
+// 2. SEED DATA
+// ════════════════════════════════════════════════════════
+const SEED = {
+  version: 1, nextId: 300,
+  settings: { theme: 'system', dismissedCarry: {} },
+  weeks: [
+    { ref:'2026-W33', wref:'W33', startDate:'2026-08-10', endDate:'2026-08-14', carriedFrom:null, tasks:[
+      { id:100, rank:1, title:'Define Detection Pipeline architecture doc',   status:'done', nextMeeting:null, carried:false, expanded:false, subtasks:[{text:'Architecture review with platform team',link:null}] },
+      { id:101, rank:2, title:'Q3 roadmap alignment with PM team',            status:'done', nextMeeting:null, carried:false, expanded:false, subtasks:[] },
+      { id:102, rank:3, title:'HX reArchitecture in AWS — initial scoping',   status:'done', nextMeeting:null, carried:false, expanded:false, subtasks:[{text:'Scoping notes shared with engineering',link:null}] },
+    ]},
+    { ref:'2026-W34', wref:'W34', startDate:'2026-08-17', endDate:'2026-08-21', carriedFrom:null, tasks:[
+      { id:1, rank:1, title:'Refine requirements for Unique Alert ID and Related stories', status:'done', nextMeeting:null, carried:false, expanded:true, subtasks:[
+          {text:'SEC-209856 — UniqueID', link:'https://enterprisetools.atlassian.net/browse/SEC-209856'},
+          {text:'SEC-218814 — TA',       link:'https://enterprisetools.atlassian.net/browse/SEC-218814'},
+          {text:'SEC-218815 — FT',       link:'https://enterprisetools.atlassian.net/browse/SEC-218815'},
+      ]},
+      { id:2, rank:2, title:'Follow ML Detection Pipeline execution', status:'in-prog', nextMeeting:'2026-08-21T14:00', carried:false, expanded:true, subtasks:[
+          {text:'Query side on Search Service',link:null},{text:'Snowflake — insertions',link:null},
+      ]},
+      { id:3, rank:3, title:'Bug: Huge number of duplicate traces (same traceid and time) in Snowflake', status:'in-prog', nextMeeting:null, carried:false, expanded:true, subtasks:[
+          {text:'SEC-209763', link:'https://enterprisetools.atlassian.net/browse/SEC-209763'},
+      ]},
+      { id:4, rank:4, title:'Presentation to Joe — EDRF Layers Detection Pipeline', status:'todo', nextMeeting:'2026-08-20T10:00', carried:false, expanded:false, subtasks:[
+          {text:'EDRF Layers Detection Pipeline and Response Flow', link:'https://enterprisetools.atlassian.net/wiki/spaces/SEC/pages/1316716556/'},
+          {text:'Presentation slides', link:'https://docs.google.com/presentation/d/1yeAUIHOX4uGyzh9ZGlTmAp0x113xyEhaL-YutysvUWw/edit'},
+      ]},
+      { id:5, rank:5, title:'Work on AIDLC', status:'todo', nextMeeting:null, carried:false, expanded:false, subtasks:[
+          {text:'AIDLC document',    link:'https://drive.google.com/file/d/1g2YXooxS7uxzenbwo6y0X0uBzNI_vOne/view'},
+          {text:'Skills repository', link:'https://github.com/mattpocock/skills'},
+      ]},
+      { id:6, rank:6, title:'HX reArchitecture in AWS', status:'todo', nextMeeting:null, carried:false, expanded:false, subtasks:[] },
+    ]},
+    { ref:'2026-W35', wref:'W35', startDate:'2026-08-24', endDate:'2026-08-28', carriedFrom:'2026-W34', tasks:[
+      { id:7, rank:1, title:'Bug: Huge number of duplicate traces (same traceid and time) in Snowflake', status:'in-prog', nextMeeting:'2026-08-26T15:00', carried:true, expanded:true, subtasks:[
+          {text:'SEC-209763', link:'https://enterprisetools.atlassian.net/browse/SEC-209763'},
+      ]},
+      { id:8, rank:2, title:'Presentation to Joe — EDRF Layers Detection Pipeline', status:'todo', nextMeeting:'2026-08-27T10:00', carried:true, expanded:false, subtasks:[
+          {text:'EDRF Layers Detection Pipeline and Response Flow', link:'https://enterprisetools.atlassian.net/wiki/spaces/SEC/pages/1316716556/'},
+          {text:'Presentation slides', link:'https://docs.google.com/presentation/d/1yeAUIHOX4uGyzh9ZGlTmAp0x113xyEhaL-YutysvUWw/edit'},
+      ]},
+      { id:9, rank:3, title:'Work on AIDLC', status:'todo', nextMeeting:null, carried:true, expanded:false, subtasks:[
+          {text:'AIDLC document',    link:'https://drive.google.com/file/d/1g2YXooxS7uxzenbwo6y0X0uBzNI_vOne/view'},
+          {text:'Skills repository', link:'https://github.com/mattpocock/skills'},
+      ]},
+    ]},
+    { ref:'2026-W36', wref:'W36', startDate:'2026-08-31', endDate:'2026-09-04', carriedFrom:null, tasks:[] },
+  ]
+};
+
+// ════════════════════════════════════════════════════════
+// 3. STORAGE
+// ════════════════════════════════════════════════════════
+const STORAGE_KEY = 'tudus-v1';   // legacy key — kept for migration only
+const LS_WORK     = 'tudus-work-v1';
+const LS_LAB      = 'tudus-lab-v1';
+function lsKey() { return S.context === 'lab' ? LS_LAB : LS_WORK; }
+// true when served via node server.js (http://localhost:3003)
+const SERVER_MODE = location.protocol === 'http:' || location.protocol === 'https:';
+
+let _needsMigration = false; // set when server is live but data file doesn't exist yet
+
+async function load(ctx) {
+  const key = ctx === 'lab' ? LS_LAB : LS_WORK;
+  if (SERVER_MODE) {
+    try {
+      const r = await fetch('/data?ctx=' + ctx, { cache: 'no-store' });
+      if (r.ok) {
+        const d = await r.json();
+        if (d && d.version === 1) {
+          localStorage.setItem(key, JSON.stringify(d));
+          return d;
+        }
+        if (ctx === 'work') _needsMigration = true;
+      }
+    } catch (_) {}
+  }
+  // For work: try new key, fall back to legacy key for migration
+  try {
+    const raw = localStorage.getItem(key) || (ctx === 'work' ? localStorage.getItem(STORAGE_KEY) : null);
+    if (raw) {
+      const d = JSON.parse(raw);
+      if (d && d.version === 1) return d;
+    }
+  } catch (_) {}
+  // Lab starts empty; work seeds with real tasks
+  if (ctx === 'lab') {
+    return { version:1, nextId:1, settings:{ theme:store ? store.settings.theme : 'system', dismissedCarry:{} }, weeks:[] };
+  }
+  return JSON.parse(JSON.stringify(SEED));
+}
+
+function save() {
+  localStorage.setItem(lsKey(), JSON.stringify(store));
+  if (SERVER_MODE) {
+    fetch('/data?ctx=' + S.context, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(store),
+    }).catch(() => {});
+  }
+}
+
+function exportData() {
+  const now  = new Date();
+  const date = toISO(now);
+  const blob = new Blob([JSON.stringify(store, null, 2)], {type:'application/json'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = `tudus-${S.context}-${date}.json`;
+  a.click(); URL.revokeObjectURL(url);
+  toast('Backup downloaded');
+}
+
+function importData(file) {
+  const taskCount = store ? store.weeks.reduce((n, w) => n + w.tasks.length, 0) : 0;
+  const migrationActive = !document.getElementById('migrate-banner').classList.contains('hidden');
+  if (!migrationActive && taskCount > 0 && !confirm(`Import will replace all current data (${taskCount} task${taskCount !== 1 ? 's' : ''} across ${store.weeks.length} week${store.weeks.length !== 1 ? 's' : ''}).\n\nExport first if you want a backup. Continue?`)) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const d = JSON.parse(e.target.result);
+      if (!d || d.version !== 1 || !Array.isArray(d.weeks)) throw new Error('Invalid');
+      store = d; save();
+      document.getElementById('migrate-banner').classList.add('hidden');
+      // Reset nav to current week
+      const cw = getISOWeekData(new Date());
+      S.weekRef = cw.ref;
+      const cDate = new Date(cw.startDate + 'T00:00:00');
+      S.monthContext = { year: cDate.getFullYear(), month: cDate.getMonth() + 1 };
+      setView('week');
+      toast('Data restored from backup');
+    } catch (_) {
+      toast('Import failed — invalid file');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function showMigrationBanner() {
+  const banner = document.getElementById('migrate-banner');
+  const code   = s => `<code style="font-family:monospace;background:var(--surface-2);padding:1px 5px;border-radius:3px;font-size:11.5px">${s}</code>`;
+  banner.innerHTML =
+    `<span>No data file found. If you have tasks in ${code('file://')} mode — open ${code('index.html')} directly, click&nbsp;⬇&nbsp;Export, then import the file here.</span>`
+    + `<div style="display:flex;gap:6px;margin-left:auto;flex-shrink:0">`
+    + `<button class="carry-dismiss" id="mgr-import" style="font-weight:600;color:var(--accent)">⬆&nbsp;Import now</button>`
+    + `<button class="carry-dismiss" id="mgr-fresh">Start fresh</button>`
+    + `</div>`;
+  banner.classList.remove('hidden');
+  document.getElementById('mgr-import').onclick = () => document.getElementById('file-input').click();
+  document.getElementById('mgr-fresh').onclick  = () => {
+    banner.classList.add('hidden');
+    save(); // write seed data to file so banner never reappears
+    toast('Starting fresh — data saved to tudus-work.json');
+  };
+}
+
+async function switchContext(ctx) {
+  if (ctx === S.context) return;
+  save(); // persist current context before switching
+  S.context = ctx;
+  localStorage.setItem('tudus-ctx', ctx);
+  document.documentElement.dataset.ctx = ctx === 'lab' ? 'lab' : '';
+  if (ctx !== 'lab') delete document.documentElement.dataset.ctx;
+  store = await load(ctx);
+  // Carry theme preference across contexts
+  applyTheme(store.settings.theme);
+  // Reset view to current week
+  S.weekRef = S.currRef;
+  const cDate = new Date(_cwd.startDate + 'T00:00:00');
+  S.monthContext = { year: cDate.getFullYear(), month: cDate.getMonth() + 1 };
+  ensureWeek(_cwd);
+  setView('week');
+  toast(ctx === 'lab' ? 'Lab context — notes-forward, no carry' : 'Work context');
+}
+
+// ════════════════════════════════════════════════════════
+// 4. STATE
+// ════════════════════════════════════════════════════════
+let store = null; // populated by async init below
+
+const _cwd   = getISOWeekData(new Date());
+const _cs    = new Date(_cwd.startDate + 'T00:00:00');
+const S = {
+  view:         'week',
+  weekRef:      _cwd.ref,
+  currRef:      _cwd.ref,   // always today's week — never changes
+  viewOnly:     false,
+  editId:       null,
+  monthContext: { year: _cs.getFullYear(), month: _cs.getMonth() + 1 },
+  context:      'work',     // 'work' | 'lab'
+};
+
+// ════════════════════════════════════════════════════════
+// 5. WEEK MANAGEMENT
+// ════════════════════════════════════════════════════════
+function getWeek(ref)   { return store.weeks.find(w => w.ref === ref); }
+function allWeeks()     { return [...store.weeks].sort((a,b) => a.startDate.localeCompare(b.startDate)); }
+
+function ensureWeek(data) {
+  let w = getWeek(data.ref);
+  if (!w) {
+    w = { ref:data.ref, wref:data.wref, startDate:data.startDate, endDate:data.endDate, carriedFrom:null, tasks:[] };
+    store.weeks.push(w);
+    store.weeks.sort((a,b) => a.startDate.localeCompare(b.startDate));
+    save();
+  }
+  return w;
+}
+
+// ════════════════════════════════════════════════════════
+// 6. CARRY-FORWARD
+// ════════════════════════════════════════════════════════
+function maybeCarryForward(fromRef, toRef) {
+  const from = getWeek(fromRef);
+  if (!from) return;
+  const to   = ensureWeek(offsetWeekData(fromRef, 1));
+  if (to.ref !== toRef) return;
+  const openTasks = from.tasks.filter(t => t.status !== 'done');
+  if (!openTasks.length) return;
+  // Task-level dedup: skip tasks already present in `to` by title
+  const existing = new Set(to.tasks.map(t => t.title.trim()));
+  const toCarry  = openTasks.filter(t => !existing.has(t.title.trim()));
+  if (!toCarry.length) return;
+  toCarry.forEach(t => {
+    to.tasks.push({
+      ...JSON.parse(JSON.stringify(t)),
+      id:      store.nextId++,
+      rank:    to.tasks.length + 1,
+      carried: true,
+      status:  t.status === 'in-prog' ? 'in-prog' : 'todo',
+    });
+  });
+  to.carriedFrom = fromRef;
+  save();
+}
+
+// ════════════════════════════════════════════════════════
+// 7. HELPERS
+// ════════════════════════════════════════════════════════
+function fmtMeet(ds) {
+  if (!ds) return null;
+  const d  = new Date(ds);
+  const mo = d.toLocaleString('en-US', {month:'short'});
+  const h  = d.getHours()%12||12, m = d.getMinutes(), ap = d.getHours()>=12?'pm':'am';
+  return `${mo} ${d.getDate()}, ${h}${m?':'+String(m).padStart(2,'0'):''}${ap}`;
+}
+function fmtMeetShort(ds) {
+  if (!ds) return null;
+  const d = new Date(ds);
+  return `${d.toLocaleString('en-US',{month:'short'})} ${d.getDate()}`;
+}
+function getDays(ds) {
+  if (!ds) return null;
+  const now = new Date(); now.setHours(0,0,0,0);
+  const tgt = new Date(ds); tgt.setHours(0,0,0,0);
+  return Math.ceil((tgt - now) / 864e5);
+}
+// Business days (Mon–Fri) remaining; negative/zero pass through as calendar days.
+function getBizDays(ds) {
+  const cal = getDays(ds);
+  if (cal === null || cal <= 0) return cal;
+  const now = new Date(); now.setHours(0,0,0,0);
+  const tgt = new Date(ds); tgt.setHours(0,0,0,0);
+  let biz = 0;
+  const d = new Date(now); d.setDate(d.getDate() + 1);
+  while (d <= tgt) { const wd = d.getDay(); if (wd !== 0 && wd !== 6) biz++; d.setDate(d.getDate() + 1); }
+  return biz;
+}
+function daysHtml(ds) {
+  const n = getDays(ds);
+  if (n === null) return '';
+  if (n  <  0)   return `<span class="dr dr-over">${Math.abs(n)}d overdue</span>`;
+  if (n === 0)   return `<span class="dr dr-today">Today</span>`;
+  const b = getBizDays(ds);
+  if (b === 1)   return `<span class="dr dr-soon">Tomorrow</span>`;
+  if (b <= 4)    return `<span class="dr dr-soon">${b}d</span>`;
+  return `<span class="dr dr-norm">${b}d</span>`;
+}
+function daysClass(ds) {
+  const n = getDays(ds);
+  if (n === null) return '';
+  if (n <  0)  return 'dr-over';
+  if (n === 0) return 'dr-today';
+  const b = getBizDays(ds);
+  if (b <= 4)  return 'dr-soon';
+  return '';
+}
+function daysText(ds) {
+  const n = getDays(ds);
+  if (n === null) return '—';
+  if (n < 0)   return `${Math.abs(n)}d over`;
+  if (n === 0) return 'Today';
+  const b = getBizDays(ds);
+  if (b === 1) return 'Tmr';
+  return `${b}d`;
+}
+
+let _toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+const STATUSES     = ['todo','in-prog','done'];
+const STATUS_LABEL = {todo:'Todo','in-prog':'In Progress',done:'Done'};
+function nextStatus(s) { return STATUSES[(STATUSES.indexOf(s)+1) % STATUSES.length]; }
+
+// ════════════════════════════════════════════════════════
+// 8. MOUSE DRAG & DROP
+// ════════════════════════════════════════════════════════
+const drag = { active:false, srcId:null, ghost:null, targetId:null, targetBefore:true, offsetY:0 };
+
+function showInd(refEl, before) {
+  removeInd();
+  const ind = document.createElement('div');
+  ind.className = 'drag-ind'; ind.id = 'drag-ind';
+  refEl.parentNode.insertBefore(ind, before ? refEl : refEl.nextSibling);
+}
+function removeInd() { const el = document.getElementById('drag-ind'); if (el) el.remove(); }
+
+function initDrag(card, taskId) {
+  card.addEventListener('mousedown', e => {
+    if (S.viewOnly || e.button !== 0) return;
+    if (e.target.closest('button, a, input, textarea, .card-notes-panel, .meet-section')) return;
+    e.preventDefault();
+    const rect = card.getBoundingClientRect();
+    drag.active = true; drag.srcId = taskId; drag.offsetY = e.clientY - rect.top;
+    clearTimeout(_tooltipTimer); notesTooltip.classList.remove('show');
+    const g = card.cloneNode(true);
+    Object.assign(g.style, {
+      position:'fixed', top:rect.top+'px', left:rect.left+'px', width:rect.width+'px',
+      zIndex:'1000', pointerEvents:'none', opacity:'0.92',
+      boxShadow:'0 16px 48px rgba(0,0,0,.22)', transform:'rotate(.6deg) scale(1.015)',
+      transition:'none', margin:'0', borderRadius:'8px',
+    });
+    document.body.appendChild(g);
+    drag.ghost = g;
+    card.classList.add('is-ghost');
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor     = 'grabbing';
+  });
+}
+
+document.addEventListener('mousemove', e => {
+  if (!drag.active || !drag.ghost) return;
+  drag.ghost.style.top = (e.clientY - drag.offsetY) + 'px';
+  const cards = [...document.querySelectorAll('.task-card')].filter(c => +c.dataset.id !== drag.srcId);
+  drag.targetId = null;
+  for (const c of cards) {
+    const r = c.getBoundingClientRect();
+    if (e.clientY >= r.top - 6 && e.clientY <= r.bottom + 6) {
+      const before = e.clientY < r.top + r.height / 2;
+      showInd(c, before); drag.targetId = +c.dataset.id; drag.targetBefore = before; break;
+    }
+  }
+  if (!drag.targetId && cards.length) {
+    const last = cards[cards.length - 1];
+    if (e.clientY > last.getBoundingClientRect().bottom) {
+      showInd(last, false); drag.targetId = +last.dataset.id; drag.targetBefore = false;
+    }
+  }
+});
+
+document.addEventListener('mouseup', () => {
+  if (!drag.active) return;
+  if (drag.ghost) { drag.ghost.remove(); drag.ghost = null; }
+  removeInd();
+  document.body.style.userSelect = '';
+  document.body.style.cursor     = '';
+  if (drag.targetId && drag.targetId !== drag.srcId) {
+    dropTask(drag.srcId, drag.targetId, drag.targetBefore);
+  } else {
+    renderWeek();
+  }
+  drag.active = false; drag.srcId = null; drag.targetId = null;
+});
+
+function dropTask(srcId, tgtId, before) {
+  const week = getWeek(S.weekRef); if (!week) return;
+  const fi = week.tasks.findIndex(t => t.id === srcId);
+  const [mv] = week.tasks.splice(fi, 1);
+  let ti = week.tasks.findIndex(t => t.id === tgtId);
+  if (!before) ti++;
+  week.tasks.splice(ti, 0, mv);
+  week.tasks.forEach((t, i) => t.rank = i + 1);
+  save(); renderWeek(); toast('Priority updated');
+}
+
+// ════════════════════════════════════════════════════════
+// 9. RENDER — WEEK VIEW
+// ════════════════════════════════════════════════════════
+function renderCarryBanner(week) {
+  const banner = document.getElementById('carry-banner');
+  if (S.context === 'lab') { banner.classList.add('hidden'); return; }
+
+  // Done banner: tasks were already carried in and not yet dismissed
+  const doneCnt = (week && week.carriedFrom && !store.settings.dismissedCarry[S.weekRef])
+    ? week.tasks.filter(t => t.carried).length : 0;
+
+  if (doneCnt > 0) {
+    const fromWeek  = getWeek(week.carriedFrom);
+    const fromLabel = fromWeek ? weekLabelShort(fromWeek.startDate, fromWeek.endDate) : week.carriedFrom;
+    banner.classList.remove('hidden');
+    banner.innerHTML = `↺&nbsp;<span><strong>${doneCnt} task${doneCnt!==1?'s':''}</strong> carried forward from <strong>${fromLabel}</strong></span>`
+      + `<button class="carry-dismiss" id="carry-dismiss-btn">Dismiss</button>`;
+    document.getElementById('carry-dismiss-btn').onclick = () => {
+      store.settings.dismissedCarry[S.weekRef] = true;
+      save(); banner.classList.add('hidden');
+    };
+    return;
+  }
+
+  // Offer banner: previous week has open tasks not yet brought into this week
+  const sorted    = allWeeks();
+  const wi        = sorted.findIndex(w => w.ref === S.weekRef);
+  const prevWeek  = wi > 0 ? sorted[wi - 1] : null;
+  const openTasks = prevWeek ? prevWeek.tasks.filter(t => t.status !== 'done') : [];
+  const existing  = week ? new Set(week.tasks.map(t => t.title.trim())) : new Set();
+  const unbrought = openTasks.filter(t => !existing.has(t.title.trim()));
+
+  if (unbrought.length) {
+    const prevLabel = weekLabelShort(prevWeek.startDate, prevWeek.endDate);
+    const cnt = unbrought.length;
+    banner.classList.remove('hidden');
+    banner.innerHTML = `↺&nbsp;<span><strong>${cnt} open task${cnt!==1?'s':''}</strong> from <strong>${prevWeek.wref} · ${prevLabel}</strong> — not yet brought in</span>`
+      + `<div style="display:flex;gap:8px;margin-left:auto;flex-shrink:0">`
+      + `<button class="carry-dismiss" id="carry-bring-btn" style="font-weight:600;color:var(--accent)">Bring in</button>`
+      + `<button class="carry-dismiss" id="carry-skip-btn">Skip</button>`
+      + `</div>`;
+    document.getElementById('carry-bring-btn').onclick = () => {
+      maybeCarryForward(prevWeek.ref, S.weekRef);
+      renderWeek();
+      toast(`${cnt} task${cnt!==1?'s':''} brought in from ${prevWeek.wref}`);
+    };
+    document.getElementById('carry-skip-btn').onclick = () => banner.classList.add('hidden');
+  } else {
+    banner.classList.add('hidden');
+  }
+}
+
+function buildSubtasksHtml(subtasks) {
+  return subtasks.map(s =>
+    `<div class="subtask"${(s.indent||0) > 0 ? ` style="margin-left:${(s.indent||0)*14}px"` : ''}>` +
+    `<span class="st-arr">↳</span>` +
+    (s.link
+      ? `<a href="${esc(s.link)}" target="_blank" rel="noopener noreferrer">${esc(s.text)}</a>`
+      : `<span>${esc(s.text)}</span>`) +
+    `</div>`
+  ).join('');
+}
+
+function buildCardHtml(t) {
+  const hasSub = t.subtasks.length > 0;
+  const mFmt   = fmtMeet(t.nextMeeting);
+  const drHtml = daysHtml(t.nextMeeting);
+
+  return `
+    <div class="card-grip-col" title="Drag to reorder"><span class="grip">⠿</span><span class="card-num">${t.rank}</span></div>
+    <div class="card-body">
+      <div class="card-head">
+        ${hasSub
+          ? `<button class="exp-btn" data-a="expand" data-id="${t.id}">${t.expanded?'▾':'▸'}</button>`
+          : `<span style="width:16px;flex-shrink:0"></span>`}
+        <span class="card-title">${esc(t.title)}</span>
+        ${t.carried ? `<span class="carried-tag">↺&nbsp;carried</span>` : ''}
+
+        <div class="card-menu-wrap">
+          <button class="card-menu-btn" data-a="menu" data-id="${t.id}" title="More options">···</button>
+          <div class="card-dropdown hidden" id="dd-${t.id}">
+            ${!S.viewOnly ? `<button class="dd-item" data-a="edit"  data-id="${t.id}">✏ Edit task</button>` : ''}
+            ${!S.viewOnly ? `<button class="dd-item" data-a="notes" data-id="${t.id}">${t.notes ? '✎ Edit notes' : '＋ Add notes'}</button>` : ''}
+            ${S.viewOnly  ? `<span class="dd-item" style="opacity:.45;cursor:default;font-size:12px">View-only mode</span>` : ''}
+            ${!S.viewOnly ? `<div class="dd-sep"></div><button class="dd-item dd-danger" data-a="delete" data-id="${t.id}">✕ Delete task</button>` : ''}
+          </div>
+        </div>
+      </div>
+      ${hasSub ? `<div class="subtasks" ${t.expanded ? '' : 'style="display:none"'}>${buildSubtasksHtml(t.subtasks)}</div>` : ''}
+      <div class="card-foot">
+        <div class="meet-section${!S.viewOnly ? ' meet-clickable' : ''}" ${!S.viewOnly ? `data-a="quickdate" data-id="${t.id}" title="Click to set date"` : ''}>
+          ${mFmt ? `<span class="meet-date">${mFmt}</span>${drHtml}` : `<span class="meet-none">No action date</span>`}
+        </div>
+        <button class="s-pill ${t.status}" data-a="status" data-id="${t.id}" ${S.viewOnly ? 'disabled' : ''}>
+          <span class="s-dot"></span>${STATUS_LABEL[t.status]}
+        </button>
+      </div>
+    </div>
+    ${t.notes ? `<div class="card-notes-panel" data-a="viewnotes" data-id="${t.id}" title="Click to view/edit notes">
+      <div class="cnp-label">◎ Notes</div>
+      <div class="cnp-preview">${esc(t.notes)}</div>
+    </div>` : ''}`;
+}
+
+function renderWeek() {
+  const week = getWeek(S.weekRef);
+  renderCarryBanner(week);
+
+  const cards = document.getElementById('task-cards');
+  if (!week || !week.tasks.length) {
+    if (S.context === 'lab') {
+      const elsewhere = store.weeks.filter(w => w.ref !== S.weekRef && w.tasks.length > 0);
+      const elseCount = elsewhere.reduce((n, w) => n + w.tasks.length, 0);
+      const elseHint  = elseCount > 0
+        ? `<p style="font-size:12.5px;color:var(--text-3);margin-top:4px">${elseCount} item${elseCount!==1?'s':''} in other weeks — <button onclick="setView('month')" style="color:var(--accent);text-decoration:underline;font-size:inherit;font-weight:500">month view</button></p>`
+        : '';
+      cards.innerHTML = `<div class="empty-state"><div class="empty-glyph">⚗</div><p>Nothing in the lab this week.</p>${!S.viewOnly ? `<button class="btn-add" onclick="openModal()">+ Start something</button>` : ''}${elseHint}</div>`;
+    } else {
+      cards.innerHTML = `<div class="empty-state"><div class="empty-glyph">◦</div><p>No tasks this week — clean slate.</p>${!S.viewOnly ? `<button class="btn-add" onclick="openModal()">+ Add first task</button>` : ''}</div>`;
+    }
+    return;
+  }
+
+  cards.innerHTML = '';
+  week.tasks.forEach(t => {
+    const card = document.createElement('div');
+    card.className = `task-card${t.status === 'done' ? ' is-done' : ''}`;
+    card.dataset.id = t.id;
+    card.innerHTML = buildCardHtml(t);
+
+    card.querySelectorAll('[data-a]').forEach(el => {
+      el.addEventListener('click', e => { e.stopPropagation(); doAction(el.dataset.a, +el.dataset.id); });
+    });
+    if (t.notes) {
+      const np = card.querySelector('.card-notes-panel');
+      if (np) {
+        np.addEventListener('mouseenter', () => showNotesTooltip(np, t.notes));
+        np.addEventListener('mouseleave', hideNotesTooltip);
+      }
+    }
+    initDrag(card, t.id);
+    cards.appendChild(card);
+  });
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function linkify(s) {
+  return String(s).split(/(https?:\/\/[^\s<>"']+)/).map((part, i) =>
+    i % 2 === 1
+      ? `<a href="${esc(part)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${esc(part)}</a>`
+      : esc(part)
+  ).join('');
+}
+function formatNotes(s) {
+  const datePfx = /^((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2}:)/gm;
+  return String(s).split(/(https?:\/\/[^\s<>"']+)/).map((part, i) =>
+    i % 2 === 1
+      ? `<a href="${esc(part)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${esc(part)}</a>`
+      : esc(part).replace(datePfx, '<span class="ntt-date">$1</span>')
+  ).join('');
+}
+
+// ════════════════════════════════════════════════════════
+// 10. ACTIONS
+// ════════════════════════════════════════════════════════
+function doAction(action, id) {
+  const week = getWeek(S.weekRef);
+  if (action === 'menu')      { toggleDropdown(id); return; }
+  if (action === 'edit')      { closeDropdowns(); if (!S.viewOnly) openModal(id); return; }
+  if (action === 'notes')     { closeDropdowns(); if (!S.viewOnly) openNotes(id); return; }
+  if (action === 'viewnotes') { if (!S.viewOnly) openNotes(id); return; }
+  if (action === 'quickdate') {
+    if (S.viewOnly) return;
+    // toggle: close any open picker
+    const existing = document.querySelector('.quick-date-pop');
+    if (existing) { existing.remove(); return; }
+    const w = getWeek(S.weekRef); if (!w) return;
+    const t = w.tasks.find(t => t.id === id); if (!t) return;
+    const section = document.querySelector(`.meet-section[data-id="${id}"]`);
+    if (!section) return;
+
+    const cur = t.nextMeeting || '';
+    const pop = document.createElement('div');
+    pop.className = 'quick-date-pop';
+
+    const dateInp = document.createElement('input');
+    dateInp.type = 'date';
+    dateInp.className = 'quick-date-finput';
+    dateInp.value = cur.slice(0, 10);
+
+    const timeInp = document.createElement('input');
+    timeInp.type = 'time';
+    timeInp.className = 'quick-date-finput quick-date-time';
+    timeInp.value = cur.slice(11, 16);
+
+    const row = document.createElement('div');
+    row.className = 'quick-date-row';
+    row.appendChild(dateInp);
+    row.appendChild(timeInp);
+
+    const clrBtn = document.createElement('button');
+    clrBtn.textContent = 'Clear';
+    clrBtn.className = 'quick-date-clr';
+
+    const okBtn = document.createElement('button');
+    okBtn.textContent = 'OK';
+    okBtn.className = 'quick-date-ok';
+
+    const actions = document.createElement('div');
+    actions.className = 'quick-date-actions';
+    actions.appendChild(clrBtn);
+    actions.appendChild(okBtn);
+
+    pop.appendChild(row);
+    pop.appendChild(actions);
+    document.body.appendChild(pop);
+
+    // position below the section; clamp to viewport edges
+    const rect = section.getBoundingClientRect();
+    pop.style.top  = (rect.bottom + 6) + 'px';
+    pop.style.left = rect.left + 'px';
+    const pr = pop.getBoundingClientRect();
+    if (pr.right  > window.innerWidth  - 8) pop.style.left = (window.innerWidth  - 8 - pr.width)  + 'px';
+    if (pr.bottom > window.innerHeight - 8) pop.style.top  = (rect.top - 6 - pr.height) + 'px';
+
+    dateInp.focus();
+
+    const commit = (val) => {
+      pop.remove();
+      document.removeEventListener('mousedown', onOutside, true);
+      const w2 = getWeek(S.weekRef); if (!w2) return;
+      const i2 = w2.tasks.findIndex(t => t.id === id); if (i2 < 0) return;
+      w2.tasks[i2].nextMeeting = val || null;
+      save(); renderWeek();
+    };
+    okBtn.addEventListener('click', () => {
+      const d = dateInp.value;
+      commit(d ? d + 'T' + (timeInp.value || '00:00') : null);
+    });
+    clrBtn.addEventListener('click', () => commit(null));
+
+    const onOutside = (e) => {
+      if (!pop.isConnected) { document.removeEventListener('mousedown', onOutside, true); return; }
+      if (pop.contains(e.target) || section.contains(e.target)) return;
+      document.removeEventListener('mousedown', onOutside, true);
+      pop.remove();
+    };
+    document.addEventListener('mousedown', onOutside, true);
+
+    pop.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { e.stopPropagation(); pop.remove(); document.removeEventListener('mousedown', onOutside, true); }
+      if (e.key === 'Enter')  { e.stopPropagation(); e.preventDefault(); okBtn.click(); }
+    });
+    return;
+  }
+  if (action === 'delete') {
+    closeDropdowns();
+    if (S.viewOnly || !week) return;
+    const idx = week.tasks.findIndex(t => t.id === id); if (idx < 0) return;
+    const title = week.tasks[idx].title;
+    if (!confirm(`Delete "${title}"?\n\nThis cannot be undone.`)) return;
+    week.tasks.splice(idx, 1);
+    week.tasks.forEach((t, i) => t.rank = i + 1);
+    save(); renderWeek(); toast('Task deleted'); return;
+  }
+  if (!week) return;
+  const idx = week.tasks.findIndex(t => t.id === id); if (idx < 0) return;
+  if (action === 'expand') {
+    week.tasks[idx].expanded = !week.tasks[idx].expanded; save(); renderWeek();
+  } else if (action === 'status') {
+    week.tasks[idx].status = nextStatus(week.tasks[idx].status);
+    save(); toast(`Marked as ${STATUS_LABEL[week.tasks[idx].status]}`); renderWeek();
+  }
+}
+
+function toggleDropdown(id) {
+  const dd  = document.getElementById('dd-' + id);
+  const btn = document.querySelector(`.card-menu-btn[data-id="${id}"]`);
+  if (!dd) return;
+  const open = !dd.classList.contains('hidden');
+  closeDropdowns();
+  if (!open) { dd.classList.remove('hidden'); btn && btn.classList.add('open'); }
+}
+function closeDropdowns() {
+  document.querySelectorAll('.card-dropdown').forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll('.card-menu-btn').forEach(el => el.classList.remove('open'));
+}
+
+// ════════════════════════════════════════════════════════
+// 11. RENDER — MONTH VIEW
+// ════════════════════════════════════════════════════════
+function renderMonth() {
+  const { year, month } = S.monthContext;
+  const weeks  = weeksInMonth(year, month);
+  const all    = weeks.flatMap(w => w.tasks);
+  const done   = all.filter(t => t.status === 'done').length;
+
+  document.getElementById('mo-nav-title').textContent = monthLabel(year, month);
+  document.getElementById('mo-nav-meta').textContent  = `${done} of ${all.length} tasks done`;
+
+  if (!weeks.length) {
+    document.getElementById('week-blocks').innerHTML = `<div class="empty-state"><div class="empty-glyph">◦</div><p>No weeks in ${monthLabel(year,month)}.</p></div>`;
+    return;
+  }
+
+  document.getElementById('week-blocks').innerHTML = weeks.map(week => {
+    const d   = week.tasks.filter(t => t.status === 'done').length;
+    const tot = week.tasks.length;
+    const pct = tot ? Math.round(d / tot * 100) : 0;
+    const isCurrentWeek = week.ref === S.currRef;
+    const open = week.ref === S.weekRef;
+
+    const rows = tot
+      ? week.tasks.map(t => {
+          const ms  = fmtMeetShort(t.nextMeeting);
+          const dc  = daysClass(t.nextMeeting);
+          const dn  = daysText(t.nextMeeting);
+          return `<div class="mrow ${t.status==='done'?'is-done':''}" data-ref="${week.ref}" data-tid="${t.id}">
+            <div class="mr-rank">${t.rank}</div>
+            <div class="mr-title">${esc(t.title)}</div>
+            <div class="mr-meet">${ms||'—'}</div>
+            <div class="mr-dr ${dc}">${dn}</div>
+            <div><span class="s-pill ${t.status}" style="pointer-events:none;font-size:11px;padding:2px 8px"><span class="s-dot"></span>${STATUS_LABEL[t.status]}</span></div>
+          </div>`;
+        }).join('')
+      : `<div style="padding:10px 16px;font-size:12.5px;color:var(--text-3)">No tasks this week</div>`;
+
+    return `
+      <div class="week-block">
+        <div class="wb-hdr ${open?'open':''}" data-ref="${week.ref}">
+          <span class="wb-wref">${week.wref}</span>
+          <span class="wb-label">${weekLabelShort(week.startDate, week.endDate)}</span>
+          ${isCurrentWeek?`<span class="wb-curr">current</span>`:''}
+          <div class="wb-prog">
+            <div class="wb-bar"><div class="wb-fill" style="width:${pct}%"></div></div>
+            <span class="wb-count">${d}/${tot}</span>
+          </div>
+          <span class="wb-chev ${open?'open':''}">▶</span>
+        </div>
+        <div class="wb-body ${open?'open':''}">${rows}</div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('week-blocks').querySelectorAll('.wb-hdr').forEach(el => {
+    el.addEventListener('click', () => {
+      const body = el.nextElementSibling, chev = el.querySelector('.wb-chev');
+      const o = !body.classList.contains('open');
+      body.classList.toggle('open', o); el.classList.toggle('open', o); chev.classList.toggle('open', o);
+    });
+  });
+  document.getElementById('week-blocks').querySelectorAll('.mrow[data-ref]').forEach(el => {
+    el.addEventListener('click', () => jumpToTask(el.dataset.ref, +el.dataset.tid));
+  });
+}
+
+function jumpToTask(weekRef, taskId) {
+  S.weekRef = weekRef;
+  const w = getWeek(weekRef);
+  if (w) {
+    const d = new Date(w.startDate + 'T00:00:00');
+    S.monthContext = { year: d.getFullYear(), month: d.getMonth() + 1 };
+  }
+  setView('week');
+  requestAnimationFrame(() => {
+    const card = document.querySelector(`.task-card[data-id="${taskId}"]`);
+    if (!card) return;
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    card.classList.add('card-highlight');
+    card.addEventListener('animationend', () => card.classList.remove('card-highlight'), { once: true });
+  });
+}
+
+// ════════════════════════════════════════════════════════
+// 12. MODAL — ADD / EDIT
+// ════════════════════════════════════════════════════════
+function parseSubs(raw) {
+  return (raw || '').split('\n').filter(s => s.trim()).map(line => {
+    // Detect indent: leading tabs (1 tab = 1 level) or leading 2-space groups
+    const iMatch = line.match(/^(\t+|( {2})+)/);
+    const indent = iMatch
+      ? Math.min(iMatch[1].startsWith('\t') ? iMatch[1].length : Math.floor(iMatch[1].length / 2), 4)
+      : 0;
+    const m = line.match(/https?:\/\/\S+/);
+    if (m) return { text: line.replace(m[0], '').replace(/^[\s\-↳]+/, '').trim() || m[0], link: m[0], indent };
+    return { text: line.replace(/^[\s\-↳]+/, '').trim(), link: null, indent };
+  });
+}
+function subsToText(subs) {
+  return subs.map(s => '\t'.repeat(s.indent || 0) + (s.link ? `${s.text} ${s.link}` : s.text)).join('\n');
+}
+function meetToVal(ds)    { return ds ? { date: ds.slice(0, 10), time: ds.slice(11, 16) } : { date: '', time: '' }; }
+
+function openModal(editId) {
+  S.editId = editId || null;
+  const week = getWeek(S.weekRef);
+  const wLabel = week ? weekLabelShort(week.startDate, week.endDate) : '';
+  if (S.editId && week) {
+    const t = week.tasks.find(t => t.id === S.editId);
+    if (!t) return;
+    document.getElementById('modal-title').innerHTML = `Edit task <span style="color:var(--text-2);font-weight:400">— ${wLabel}</span>`;
+    const mv = meetToVal(t.nextMeeting);
+    document.getElementById('f-title').value     = t.title;
+    document.getElementById('f-subs').value      = subsToText(t.subtasks);
+    document.getElementById('f-meet-date').value = mv.date;
+    document.getElementById('f-meet-time').value = mv.time;
+    document.getElementById('btn-mo-save').textContent = 'Save changes';
+  } else {
+    document.getElementById('modal-title').innerHTML = `Add task <span style="color:var(--text-2);font-weight:400">— ${wLabel}</span>`;
+    document.getElementById('f-title').value     = '';
+    document.getElementById('f-subs').value      = '';
+    document.getElementById('f-meet-date').value = '';
+    document.getElementById('f-meet-time').value = '';
+    document.getElementById('btn-mo-save').textContent = 'Add Task';
+  }
+  document.getElementById('overlay').classList.remove('hidden');
+  setTimeout(() => document.getElementById('f-title').focus(), 40);
+}
+
+function closeModal() {
+  document.getElementById('overlay').classList.add('hidden');
+  S.editId = null;
+}
+
+function saveTask() {
+  const title = document.getElementById('f-title').value.trim();
+  if (!title) { document.getElementById('f-title').focus(); return; }
+  const subtasks  = parseSubs(document.getElementById('f-subs').value);
+  const meetDate  = document.getElementById('f-meet-date').value;
+  const meetTime  = document.getElementById('f-meet-time').value;
+  const rawMeet   = meetDate ? `${meetDate}T${meetTime || '00:00'}` : '';
+  const week     = getWeek(S.weekRef);
+  if (!week) return;
+
+  if (S.editId) {
+    const idx = week.tasks.findIndex(t => t.id === S.editId);
+    if (idx >= 0) {
+      week.tasks[idx] = { ...week.tasks[idx], title, nextMeeting: rawMeet || null,
+        subtasks, expanded: subtasks.length > 0 || week.tasks[idx].expanded };
+    }
+    save(); closeModal(); renderWeek(); toast('Task updated');
+  } else {
+    week.tasks.push({ id: store.nextId++, rank: week.tasks.length + 1, title,
+      status: 'todo', nextMeeting: rawMeet || null, carried: false,
+      expanded: subtasks.length > 0 || S.context === 'lab', subtasks });
+    const newId = store.nextId - 1;
+    save(); closeModal(); renderWeek(); toast('Task added');
+    // In lab, immediately open notes so the task is useful from the start
+    if (S.context === 'lab') setTimeout(() => openNotes(newId), 80);
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// 13. NOTES TOOLTIP
+// ════════════════════════════════════════════════════════
+const notesTooltip = document.getElementById('notes-tooltip');
+let _tooltipTimer = null;
+
+function showNotesTooltip(panelEl, text) {
+  if (drag.active) return;
+  clearTimeout(_tooltipTimer);
+  notesTooltip.innerHTML = formatNotes(text);
+  notesTooltip.classList.add('show');
+  const r    = panelEl.getBoundingClientRect();
+  const gap  = 10;
+  const tw   = 500;
+  // Prefer left of the panel; fall back to right if clipped
+  const left = r.left - tw - gap >= 8 ? r.left - tw - gap : r.right + gap;
+  notesTooltip.style.left = Math.max(8, left) + 'px';
+  notesTooltip.style.top  = r.top + 'px';
+  // Vertical clamp after paint so height is known
+  requestAnimationFrame(() => {
+    const th  = notesTooltip.offsetHeight;
+    let   top = r.top;
+    if (top + th > window.innerHeight - 8) top = window.innerHeight - th - 8;
+    if (top < 8) top = 8;
+    notesTooltip.style.top = top + 'px';
+  });
+}
+
+function hideNotesTooltip() {
+  _tooltipTimer = setTimeout(() => notesTooltip.classList.remove('show'), 120);
+}
+
+notesTooltip.addEventListener('mouseenter', () => clearTimeout(_tooltipTimer));
+notesTooltip.addEventListener('mouseleave', () => notesTooltip.classList.remove('show'));
+
+// ════════════════════════════════════════════════════════
+// 15. NOTES MODAL
+// ════════════════════════════════════════════════════════
+let _notesId = null;
+
+function notesDatePrefix() {
+  const d = new Date();
+  return d.toLocaleString('en', { month: 'short' }) + ' ' + d.getDate() + ': ';
+}
+
+function openNotes(id) {
+  const week = getWeek(S.weekRef); if (!week) return;
+  const t    = week.tasks.find(t => t.id === id); if (!t) return;
+  _notesId = id;
+  document.getElementById('notes-modal-title').textContent = t.notes ? 'Edit Notes' : 'Add Notes';
+  document.getElementById('notes-context').textContent     = t.title;
+  const ta = document.getElementById('notes-textarea');
+  if (t.notes) {
+    ta.value = t.notes;
+    ta.selectionStart = ta.selectionEnd = ta.value.length;
+  } else {
+    ta.value = notesDatePrefix();
+    ta.selectionStart = ta.selectionEnd = ta.value.length;
+  }
+  updateNotesCount();
+  document.getElementById('notes-overlay').classList.remove('hidden');
+  setTimeout(() => { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }, 40);
+}
+
+function updateNotesCount() {
+  const len = (document.getElementById('notes-textarea').value || '').length;
+  document.getElementById('notes-char-count').textContent = len ? `${len} char${len!==1?'s':''}` : '';
+}
+
+function closeNotes() {
+  document.getElementById('notes-overlay').classList.add('hidden');
+  _notesId = null;
+}
+
+function saveNotes() {
+  if (_notesId === null) return;
+  const week = getWeek(S.weekRef); if (!week) return;
+  const idx  = week.tasks.findIndex(t => t.id === _notesId); if (idx < 0) return;
+  const text = document.getElementById('notes-textarea').value.trim();
+  // Treat a bare auto-prefix with nothing typed after it the same as empty
+  const cleaned = text === notesDatePrefix().trim() ? '' : text;
+  week.tasks[idx].notes = cleaned || null;
+  save(); closeNotes(); renderWeek();
+  toast(text ? 'Notes saved' : 'Notes cleared');
+}
+
+function clearNotes() {
+  if (_notesId === null) return;
+  document.getElementById('notes-textarea').value = '';
+  updateNotesCount();
+}
+
+// ════════════════════════════════════════════════════════
+// 16. HEADER SYNC
+// ════════════════════════════════════════════════════════
+function syncHeader() {
+  const week      = getWeek(S.weekRef);
+  const isCurrent = S.weekRef === S.currRef;
+  const isPast    = week && week.endDate < toISO(new Date());
+
+  // Week period labels
+  document.getElementById('p-wref').textContent  = week ? week.wref : '';
+  document.getElementById('p-label').textContent = week ? weekLabelFull(week.startDate, week.endDate) : '';
+  document.getElementById('curr-badge').classList.toggle('hidden', !isCurrent);
+  document.getElementById('period-wrap').className = 'period-wrap' + (isPast && !isCurrent ? ' is-past' : '');
+
+  // Prev / next availability
+  const sorted = allWeeks();
+  const wi = sorted.findIndex(w => w.ref === S.weekRef);
+  document.getElementById('btn-prev').disabled = wi <= 0;
+  document.getElementById('btn-next').disabled = false; // forward always allowed — creates week on demand
+
+  // Current Week button
+  const tw = document.getElementById('btn-thisweek');
+  tw.textContent = isCurrent ? '✓ Current Week' : 'Current Week';
+  tw.classList.toggle('on-curr', isCurrent);
+
+  // Current Month button
+  const now = new Date();
+  const isCurrentMonth = S.monthContext.year === now.getFullYear() && S.monthContext.month === now.getMonth() + 1;
+  const cm = document.getElementById('btn-curr-month');
+  cm.textContent = isCurrentMonth ? '✓ Current Month' : 'Current Month';
+  cm.classList.toggle('on-curr', isCurrentMonth);
+
+  // View toggle
+  document.getElementById('btn-v-week').classList.toggle('active',  S.view === 'week');
+  document.getElementById('btn-v-month').classList.toggle('active', S.view === 'month');
+
+  // Nav section swap
+  document.getElementById('nav-week').classList.toggle('hidden',  S.view !== 'week');
+  document.getElementById('nav-month').classList.toggle('hidden', S.view !== 'month');
+
+  // Month nav context
+  document.getElementById('mo-nav-title').textContent = monthLabel(S.monthContext.year, S.monthContext.month);
+
+  // View-only
+  document.getElementById('btn-viewonly').classList.toggle('active', S.viewOnly);
+  document.getElementById('vo-chip').classList.toggle('hidden',  !S.viewOnly);
+  document.getElementById('btn-add').classList.toggle('hidden',   S.viewOnly);
+
+  // Context toggle
+  document.getElementById('btn-ctx-work').classList.toggle('active', S.context !== 'lab');
+  document.getElementById('btn-ctx-lab').classList.toggle('active',  S.context === 'lab');
+
+  // Theme indicator
+  const themes = { system:'◑', light:'☀', dark:'☽' };
+  document.getElementById('btn-theme').textContent = themes[store.settings.theme] || '◑';
+}
+
+// ════════════════════════════════════════════════════════
+// 17. THEME
+// ════════════════════════════════════════════════════════
+const THEME_CYCLE = ['system','light','dark'];
+function applyTheme(theme) {
+  const root = document.documentElement;
+  if (theme === 'light')  root.setAttribute('data-theme', 'light');
+  else if (theme === 'dark') root.setAttribute('data-theme', 'dark');
+  else root.removeAttribute('data-theme');
+}
+function cycleTheme() {
+  const cur = store.settings.theme || 'system';
+  const nxt = THEME_CYCLE[(THEME_CYCLE.indexOf(cur) + 1) % THEME_CYCLE.length];
+  store.settings.theme = nxt;
+  save(); applyTheme(nxt); syncHeader();
+  toast({ system:'Theme: System', light:'Theme: Light', dark:'Theme: Dark' }[nxt]);
+}
+
+// ════════════════════════════════════════════════════════
+// 18. VIEW & NAVIGATION
+// ════════════════════════════════════════════════════════
+function setView(v) {
+  if (!store) return;
+  S.view = v;
+  document.getElementById('week-view').classList.toggle('hidden',  v !== 'week');
+  document.getElementById('month-view').classList.toggle('hidden', v !== 'month');
+  syncHeader();
+  if (v === 'week') renderWeek(); else renderMonth();
+}
+
+function navigateWeek(delta) {
+  if (!store) return;
+  const sorted = allWeeks();
+  const wi     = sorted.findIndex(w => w.ref === S.weekRef);
+  if (wi < 0) return;
+
+  let newRef;
+  if (delta > 0) {
+    // Forward: create the target week on demand so navigation is always possible
+    const nextData = offsetWeekData(S.weekRef, delta);
+    ensureWeek(nextData);
+    newRef = nextData.ref;
+  } else {
+    // Backward: only navigate to existing weeks
+    const newIdx = wi + delta;
+    if (newIdx < 0) return;
+    newRef = sorted[newIdx].ref;
+  }
+
+  // Clean up the week we're leaving if it's empty and has no carry origin (navigation artifact)
+  const leaving = getWeek(S.weekRef);
+  if (leaving && !leaving.tasks.length && !leaving.carriedFrom && S.weekRef !== S.currRef) {
+    store.weeks = store.weeks.filter(w => w.ref !== S.weekRef);
+    save();
+  }
+
+  S.weekRef = newRef;
+  const w = getWeek(newRef);
+  if (w) { const d = new Date(w.startDate + 'T00:00:00'); S.monthContext = { year:d.getFullYear(), month:d.getMonth()+1 }; }
+  setView('week');
+}
+
+function goToCurrentWeek() {
+  if (S.weekRef === S.currRef) return;
+  S.weekRef = S.currRef;
+  const w = getWeek(S.currRef);
+  if (w) { const d = new Date(w.startDate+'T00:00:00'); S.monthContext={year:d.getFullYear(),month:d.getMonth()+1}; }
+  setView('week');
+  toast('Jumped to current week');
+}
+
+function goToCurrentMonth() {
+  const now = new Date();
+  const y = now.getFullYear(), m = now.getMonth() + 1;
+  if (S.monthContext.year === y && S.monthContext.month === m) return;
+  S.monthContext = { year: y, month: m };
+  renderMonth(); syncHeader();
+}
+
+function navigateMonth(delta) {
+  let { year, month } = S.monthContext;
+  month += delta;
+  if (month > 12) { month = 1; year++; }
+  if (month < 1)  { month = 12; year--; }
+  S.monthContext = { year, month };
+  renderMonth(); syncHeader();
+}
+
+// ════════════════════════════════════════════════════════
+// 19. EVENTS
+// ════════════════════════════════════════════════════════
+document.getElementById('btn-prev').addEventListener('click',     () => navigateWeek(-1));
+document.getElementById('btn-next').addEventListener('click',     () => navigateWeek(+1));
+document.getElementById('btn-thisweek').addEventListener('click', () => goToCurrentWeek());
+document.getElementById('btn-v-week').addEventListener('click',   () => {
+  if (S.view === 'month') {
+    const mw = weeksInMonth(S.monthContext.year, S.monthContext.month);
+    if (mw.length && !mw.some(w => w.ref === S.weekRef)) S.weekRef = mw[0].ref;
+  }
+  setView('week');
+});
+document.getElementById('btn-v-month').addEventListener('click',  () => setView('month'));
+document.getElementById('btn-mo-prev').addEventListener('click',  () => navigateMonth(-1));
+document.getElementById('btn-mo-next').addEventListener('click',  () => navigateMonth(+1));
+document.getElementById('btn-curr-month').addEventListener('click', () => goToCurrentMonth());
+document.getElementById('btn-viewonly').addEventListener('click', () => {
+  S.viewOnly = !S.viewOnly; syncHeader();
+  if (S.view === 'week') renderWeek();
+  toast(S.viewOnly ? 'View-only — editing disabled' : 'Edit mode enabled');
+});
+document.getElementById('btn-add').addEventListener('click',    () => openModal());
+document.getElementById('btn-mo-cancel').addEventListener('click', closeModal);
+document.getElementById('btn-mo-save').addEventListener('click',   saveTask);
+document.getElementById('overlay').addEventListener('click',    e => { if (e.target === document.getElementById('overlay')) closeModal(); });
+document.getElementById('btn-notes-cancel').addEventListener('click', closeNotes);
+document.getElementById('btn-notes-save').addEventListener('click',   saveNotes);
+document.getElementById('btn-notes-clear').addEventListener('click',  clearNotes);
+document.getElementById('notes-overlay').addEventListener('click', e => { if (e.target === document.getElementById('notes-overlay')) closeNotes(); });
+document.getElementById('notes-textarea').addEventListener('input', updateNotesCount);
+document.getElementById('notes-textarea').addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  e.preventDefault();
+  const el = e.target, s = el.selectionStart, end = el.selectionEnd;
+  // Ctrl/Cmd+Enter: continuation line — tab-indented, no date
+  // Shift+Enter: plain new line — no date, no indent
+  // Plain Enter: new dated entry
+  const ins = (e.ctrlKey || e.metaKey) ? '\n\t' : e.shiftKey ? '\n' : '\n' + notesDatePrefix();
+  el.value = el.value.slice(0, s) + ins + el.value.slice(end);
+  el.selectionStart = el.selectionEnd = s + ins.length;
+  updateNotesCount();
+});
+document.getElementById('btn-theme').addEventListener('click',  cycleTheme);
+
+document.getElementById('week-jump-input').addEventListener('keydown', e => {
+  if (e.key === 'Escape') { e.target.value = ''; e.target.blur(); return; }
+  if (e.key !== 'Enter') return;
+  e.preventDefault();
+  const raw = e.target.value.trim().toUpperCase();
+  e.target.value = '';
+  if (!raw) return;
+
+  let targetRef;
+  if (/^\d{4}-W\d{1,2}$/.test(raw)) {
+    targetRef = raw;
+  } else if (/^W\d{1,2}$/.test(raw)) {
+    const match = allWeeks().find(w => w.wref === raw);
+    targetRef = match ? match.ref : `${new Date().getFullYear()}-${raw}`;
+  } else {
+    toast('Use W33 or 2026-W33 format'); return;
+  }
+
+  let weekData;
+  try { weekData = offsetWeekData(targetRef, 0); } catch { toast('Invalid week'); return; }
+
+  ensureWeek(weekData);
+  S.weekRef = weekData.ref;
+  const w = getWeek(weekData.ref);
+  if (w) { const d = new Date(w.startDate + 'T00:00:00'); S.monthContext = { year:d.getFullYear(), month:d.getMonth()+1 }; }
+  setView('week');
+  toast(`Jumped to ${weekData.wref}`);
+});
+document.getElementById('btn-export').addEventListener('click', exportData);
+document.getElementById('btn-import').addEventListener('click', () => document.getElementById('file-input').click());
+document.getElementById('file-input').addEventListener('change', e => {
+  const f = e.target.files[0]; if (f) importData(f);
+  e.target.value = ''; // reset so same file can be re-imported
+});
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.card-menu-wrap')) closeDropdowns();
+});
+
+document.getElementById('f-subs').addEventListener('keydown', e => {
+  if (e.key !== 'Tab') return;
+  e.preventDefault();
+  const el = e.target, s = el.selectionStart, end = el.selectionEnd, val = el.value;
+
+  if (!val.slice(s, end).includes('\n')) {
+    // Single cursor or same-line selection: insert one tab
+    el.value = val.slice(0, s) + '\t' + val.slice(end);
+    el.selectionStart = el.selectionEnd = s + 1;
+    return;
+  }
+
+  // Multi-line selection: indent or dedent every covered line
+  const lineStart = val.lastIndexOf('\n', s - 1) + 1;
+  const before = val.slice(0, lineStart);
+  const block  = val.slice(lineStart, end);
+  const after  = val.slice(end);
+  // Preserve trailing newline separately so it isn't processed as an extra empty line
+  const trail   = block.endsWith('\n') ? '\n' : '';
+  const core    = trail ? block.slice(0, -1) : block;
+  const newCore = e.shiftKey ? core.replace(/^\t/gm, '') : core.replace(/^/gm, '\t');
+  const newBlock = newCore + trail;
+  el.value = before + newBlock + after;
+  el.selectionStart = lineStart;
+  el.selectionEnd   = lineStart + newBlock.length;
+});
+
+document.addEventListener('keydown', e => {
+  const inInput = ['INPUT','TEXTAREA'].includes(document.activeElement.tagName);
+  if (e.key === 'Escape') { closeDropdowns(); closeModal(); closeNotes(); }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); if (!S.viewOnly) openModal(); }
+  if (!inInput && e.key === 'ArrowLeft')  navigateWeek(-1);
+  if (!inInput && e.key === 'ArrowRight') navigateWeek(+1);
+});
+
+document.getElementById('btn-ctx-work').addEventListener('click', () => switchContext('work'));
+document.getElementById('btn-ctx-lab').addEventListener('click',  () => switchContext('lab'));
+
+// ════════════════════════════════════════════════════════
+// 20. INIT
+// ════════════════════════════════════════════════════════
+(async () => {
+  const savedCtx = localStorage.getItem('tudus-ctx') || 'work';
+  S.context = savedCtx;
+  if (savedCtx === 'lab') document.documentElement.dataset.ctx = 'lab';
+  store = await load(savedCtx);
+  // Remove any malformed week entries (e.g. created by passing a string to ensureWeek)
+  const badWeeks = store.weeks.filter(w => !w.ref || !w.startDate || !w.endDate).length;
+  if (badWeeks) { store.weeks = store.weeks.filter(w => w.ref && w.startDate && w.endDate); save(); }
+  applyTheme(store.settings.theme);
+  ensureWeek(_cwd);
+  setView('week');
+  if (SERVER_MODE && _needsMigration) showMigrationBanner();
+  else if (SERVER_MODE) {
+    const ctx = S.context;
+    const file = ctx === 'lab' ? 'tudus-lab.json' : 'tudus-work.json';
+    toast(`Connected · ${ctx === 'lab' ? 'Lab' : 'Work'} · saving to ${file}`);
+  }
+})();
+</script>

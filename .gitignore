@@ -1,0 +1,9 @@
+# Personal task data — stays local
+data/
+
+# Claude Code memory files
+.claude/
+
+# OS noise
+.DS_Store
+Thumbs.db

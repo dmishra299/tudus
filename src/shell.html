@@ -1,0 +1,193 @@
+<title>tudus</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+<!--CSS-->
+</style>
+
+<div id="app">
+  <header class="hdr">
+    <div class="app-name">tu<em>·</em>dus</div>
+    <div class="ctx-seg">
+      <button class="ctx-btn active" id="btn-ctx-work">Work</button>
+      <button class="ctx-btn"        id="btn-ctx-lab">Lab</button>
+      <button class="ctx-btn"        id="btn-ctx-notes">Memos</button>
+    </div>
+
+    <!-- Week nav -->
+    <div class="hdr-nav" id="nav-week">
+      <button class="nav-btn" id="btn-prev">←</button>
+      <div class="period-wrap" id="period-wrap">
+        <span class="period-wref" id="p-wref"></span>
+        <span class="period-label" id="p-label"></span>
+        <span class="curr-badge hidden" id="curr-badge">current</span>
+      </div>
+      <button class="nav-btn" id="btn-next">→</button>
+      <button class="btn-thisweek" id="btn-thisweek">Current Week</button>
+      <input class="week-jump-input" id="week-jump-input" type="text" placeholder="Go to W…" maxlength="10" title="Jump to week: type W33 or 2026-W33 and press Enter">
+    </div>
+
+    <!-- Month nav -->
+    <div class="hdr-nav hidden" id="nav-month">
+      <button class="nav-btn" id="btn-mo-prev">←</button>
+      <div class="mo-nav-wrap">
+        <span class="mo-nav-title" id="mo-nav-title"></span>
+        <span class="mo-nav-meta"  id="mo-nav-meta"></span>
+      </div>
+      <button class="nav-btn" id="btn-mo-next">→</button>
+      <button class="btn-thisweek" id="btn-curr-month">Current Month</button>
+    </div>
+
+    <div class="hdr-right">
+      <div class="view-seg">
+        <button class="seg-btn active" id="btn-v-week">Week</button>
+        <button class="seg-btn"        id="btn-v-month">Month</button>
+      </div>
+      <div class="hdiv"></div>
+      <button class="btn-ghost" id="btn-viewonly">View Only</button>
+      <div class="hdiv"></div>
+      <button class="btn-ghost" id="btn-theme" title="Toggle theme">◑</button>
+      <button class="btn-ghost" id="btn-export" title="Export backup">⬇</button>
+      <button class="btn-ghost" id="btn-import" title="Import backup">⬆</button>
+      <div class="hdiv"></div>
+      <span  class="vo-chip hidden" id="vo-chip">● View Only</span>
+      <button class="btn-add hidden" id="btn-add">+ Task<span class="kbd">⌘K</span></button>
+    </div>
+  </header>
+
+  <main class="main">
+    <div id="week-view">
+      <div class="carry-banner hidden" id="migrate-banner"></div>
+      <div class="carry-banner hidden" id="carry-banner"></div>
+      <div class="task-cards" id="task-cards"></div>
+    </div>
+    <div id="month-view" class="hidden">
+      <div class="carry-banner hidden" id="lab-carry-banner"></div>
+      <div id="week-blocks"></div>
+    </div>
+    <div id="notes-view" class="hidden">
+      <div class="notes-view-hdr">
+        <span class="notes-view-title">Memos</span>
+        <button class="btn-add" id="btn-add-note" style="height:30px;padding:0 14px;font-size:12.5px">+ Memo</button>
+      </div>
+      <div class="note-cards" id="note-cards"></div>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div class="overlay hidden" id="overlay">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-title" id="modal-title"></div>
+      <div class="fgrp">
+        <label class="flabel" for="f-title">Task title</label>
+        <input class="finput" id="f-title" type="text" placeholder="What needs to be done?">
+      </div>
+      <div class="fgrp">
+        <label class="flabel" for="f-subs">Sub-items / links <span style="font-weight:400;text-transform:none;letter-spacing:0">(one per line)</span></label>
+        <textarea class="ftextarea" id="f-subs" placeholder="Context note&#10;https://jira/TICKET-123 Label for link"></textarea>
+      </div>
+      <div class="fgrp">
+        <label class="flabel">Next action</label>
+        <div style="display:flex;gap:8px">
+          <input class="finput" id="f-meet-date" type="date" style="flex:1">
+          <input class="finput" id="f-meet-time" type="time" style="width:110px">
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn-cancel" id="btn-mo-cancel">Cancel</button>
+        <button type="button" class="btn-add"    id="btn-mo-save" style="height:30px;padding:0 14px">Add Task</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notes modal -->
+  <div class="notes-overlay hidden" id="notes-overlay">
+    <div class="notes-modal" role="dialog" aria-modal="true">
+      <div class="modal-title" id="notes-modal-title">Notes</div>
+      <div class="notes-context" id="notes-context"></div>
+      <textarea class="notes-textarea" id="notes-textarea" placeholder="Add your notes here…"></textarea>
+      <div class="notes-char-count" id="notes-char-count"></div>
+      <div class="modal-foot">
+        <button type="button" class="btn-cancel" id="btn-notes-clear" style="margin-right:auto">Clear</button>
+        <button type="button" class="btn-cancel" id="btn-notes-cancel">Cancel</button>
+        <button type="button" class="btn-add"    id="btn-notes-save" style="height:30px;padding:0 14px">Save Notes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Note edit modal -->
+  <div class="overlay hidden" id="note-edit-overlay">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-title" id="note-edit-title">Add Memo</div>
+      <div class="fgrp">
+        <label class="flabel" for="note-edit-ttl">Title</label>
+        <input class="finput" id="note-edit-ttl" type="text" placeholder="What's this note about?">
+      </div>
+      <div class="fgrp">
+        <textarea class="ftextarea" id="note-edit-textarea" placeholder="Sep 4: Your thoughts here…" style="min-height:200px;resize:vertical"></textarea>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn-cancel" id="note-edit-cancel">Cancel</button>
+        <button type="button" class="btn-add"    id="note-edit-save" style="height:30px;padding:0 14px">Save Memo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Note full-view modal -->
+  <div class="overlay hidden" id="note-view-overlay">
+    <div class="modal note-view-modal" role="dialog" aria-modal="true">
+      <div class="note-view-head">
+        <div class="nvm-title-row">
+          <div class="note-view-modal-title" id="note-view-modal-title"></div>
+          <input class="note-view-ttl-input hidden" id="note-view-ttl-input" type="text" placeholder="Memo title">
+        </div>
+        <div class="note-view-modal-date" id="note-view-modal-date"></div>
+      </div>
+      <div class="note-view-body-wrap">
+        <div class="note-view-body" id="note-view-body"></div>
+        <textarea class="note-view-textarea hidden" id="note-view-textarea" placeholder="Sep 5: Your thoughts here…"></textarea>
+        <button class="nvm-edit-icon" id="note-view-edit-icon" title="Edit memo">✎</button>
+      </div>
+      <div class="note-view-linked-tasks hidden" id="note-view-linked-tasks"></div>
+      <div class="modal-foot">
+        <button type="button" class="btn-cancel" id="note-view-close">Close</button>
+        <button type="button" class="btn-ghost"  id="note-view-link-task">Link Task</button>
+        <button type="button" class="btn-cancel hidden" id="note-view-edit-cancel">Cancel</button>
+        <button type="button" class="btn-add hidden" id="note-view-edit-save" style="height:30px;padding:0 14px">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Task picker modal -->
+  <div class="overlay hidden" id="task-picker-overlay">
+    <div class="modal task-picker-modal" role="dialog" aria-modal="true">
+      <div class="modal-title">Link Tasks</div>
+      <input class="finput" id="task-picker-search" type="text" placeholder="Filter tasks…" autocomplete="off" style="margin-bottom:10px">
+      <div class="task-picker-list" id="task-picker-list"></div>
+      <div class="modal-foot">
+        <button type="button" class="btn-cancel" id="task-picker-cancel">Cancel</button>
+        <button type="button" class="btn-add"    id="task-picker-confirm" style="height:30px;padding:0 14px">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm dialog -->
+  <div class="overlay hidden" id="confirm-overlay">
+    <div class="modal confirm-modal" role="alertdialog" aria-modal="true">
+      <div class="confirm-brand">tu·dus</div>
+      <p class="confirm-msg" id="confirm-msg"></p>
+      <div class="modal-foot">
+        <button type="button" class="btn-cancel" id="confirm-cancel">Cancel</button>
+        <button type="button" class="btn-danger" id="confirm-ok">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden import input -->
+  <input type="file" id="file-input" accept=".json" class="hidden">
+  <div class="toast" id="toast"></div>
+  <div id="notes-tooltip"></div>
+</div>
+
+<script>
+<!--JS-->
+</script>

@@ -1,0 +1,13 @@
+/* ── Toast ────────────────────────────────────────────── */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--text-1);color:var(--bg);padding:9px 16px;border-radius:var(--r);font-size:12.5px;z-index:400;pointer-events:none;transition:transform .22s ease;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+.hidden{display:none !important}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none !important}}
+
+/* ── Confirm dialog ─────────────────────────────────── */
+.confirm-modal{max-width:360px}
+.confirm-brand{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:14px}
+.confirm-msg{font-size:13.5px;line-height:1.55;color:var(--text-1);white-space:pre-wrap;margin:0 0 6px}
+.btn-danger{height:30px;padding:0 14px;border-radius:var(--r-sm);font-size:12.5px;font-weight:600;background:#dc2626;color:#fff;border:none;cursor:pointer;transition:background .15s}
+.btn-danger:hover{background:#b91c1c}

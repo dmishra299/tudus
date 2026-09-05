@@ -1,0 +1,50 @@
+/* ── Header ───────────────────────────────────────────── */
+.hdr{position:fixed;top:0;left:0;right:0;height:var(--hdr-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;z-index:100}
+.app-name{font-family:ui-monospace,'Cascadia Code','JetBrains Mono',Menlo,monospace;font-size:15px;font-weight:700;letter-spacing:-0.03em;color:var(--text-1);user-select:none;flex-shrink:0;padding-right:16px;border-right:1px solid var(--border)}
+.app-name em{color:var(--accent);font-style:normal}
+
+.hdr-nav{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+
+.nav-btn{height:36px;min-width:42px;padding:0 10px;border-radius:var(--r);border:1.5px solid var(--border);background:var(--surface-2);color:var(--text-2);font-size:16px;font-family:ui-monospace,monospace;display:flex;align-items:center;justify-content:center;transition:background .12s,border-color .12s,color .12s;flex-shrink:0}
+.nav-btn:hover:not(:disabled){background:var(--accent-lt);border-color:var(--accent);color:var(--accent)}
+.nav-btn:disabled{opacity:.3;cursor:default}
+
+.period-wrap{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.period-wref{font-family:ui-monospace,monospace;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3)}
+.period-label{font-size:14px;font-weight:500;color:var(--text-1);white-space:nowrap}
+.period-wrap.is-past .period-label{color:var(--text-3)}
+.curr-badge{font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--s-done-txt);background:var(--s-done-bg);padding:2px 7px;border-radius:10px}
+
+.btn-thisweek{height:30px;padding:0 12px;border-radius:var(--r-sm);font-size:12px;font-weight:600;border:1.5px solid var(--accent);color:var(--accent);background:transparent;transition:background .12s;flex-shrink:0}
+.btn-thisweek:hover{background:var(--accent-lt)}
+.btn-thisweek.on-curr{border-color:var(--s-done-dot);color:var(--s-done-txt);font-weight:500}
+.btn-thisweek.on-curr:hover{background:var(--s-done-bg)}
+.week-jump-input{height:30px;padding:0 8px;border-radius:var(--r-sm);font-size:12px;border:1.5px solid var(--border);background:var(--surface);color:var(--text-1);width:80px;outline:none;transition:border-color .12s;flex-shrink:0}
+.week-jump-input:focus{border-color:var(--accent)}
+.week-jump-input::placeholder{color:var(--text-3)}
+
+.mo-nav-wrap{display:flex;flex-direction:column;gap:1px}
+.mo-nav-title{font-size:14px;font-weight:500;color:var(--text-1);white-space:nowrap}
+.mo-nav-meta{font-size:11px;color:var(--text-3)}
+
+/* ── Header right ─────────────────────────────────────── */
+.hdr-right{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0}
+.view-seg{display:flex;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:2px;gap:2px}
+.seg-btn{height:26px;padding:0 13px;border-radius:3px;font-size:12.5px;color:var(--text-2);transition:background .1s,color .1s,box-shadow .1s}
+.seg-btn:hover{color:var(--text-1)}
+.seg-btn.active{background:var(--surface);color:var(--text-1);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.ctx-seg{display:flex;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:2px;gap:2px}
+.ctx-btn{height:26px;padding:0 10px;border-radius:3px;font-size:12px;font-weight:500;color:var(--text-2);transition:background .12s,color .12s}
+.ctx-btn:hover{color:var(--text-1)}
+.ctx-btn.active{background:var(--accent);color:#fff;font-weight:600}
+.hdiv{width:1px;height:18px;background:var(--border);flex-shrink:0}
+.btn-ghost{height:30px;padding:0 10px;border-radius:var(--r-sm);font-size:12.5px;color:var(--text-2);transition:background .12s,color .12s}
+.btn-ghost:hover{background:var(--surface-2);color:var(--text-1)}
+.btn-ghost.active{background:var(--accent-lt);color:var(--accent)}
+.vo-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:10.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;background:var(--surface-2);color:var(--text-3);border:1px solid var(--border)}
+.btn-add{height:30px;padding:0 14px;border-radius:var(--r-sm);font-size:12.5px;font-weight:500;background:var(--accent);color:#fff;transition:opacity .12s}
+.btn-add:hover{opacity:.84}
+.kbd{font-family:ui-monospace,monospace;font-size:10px;padding:1px 4px;border:1px solid rgba(255,255,255,.3);border-radius:3px;opacity:.75;vertical-align:middle;margin-left:3px}
+
+/* ── Main ─────────────────────────────────────────────── */
+.main{margin-top:var(--hdr-h);padding:22px 22px 72px;max-width:860px;margin-left:auto;margin-right:auto}

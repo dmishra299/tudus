@@ -1,0 +1,94 @@
+/* ── Carry banner ─────────────────────────────────────── */
+.carry-banner{display:flex;align-items:center;gap:8px;padding:10px 14px;margin-bottom:16px;background:var(--carry-bg);border:1px solid var(--carry-bdr);border-radius:var(--r);font-size:13px;color:var(--carry-col)}
+.carry-banner strong{font-weight:600}
+.carry-dismiss{margin-left:auto;font-size:11.5px;color:var(--text-3);flex-shrink:0;transition:color .1s}
+.carry-dismiss:hover{color:var(--text-1)}
+
+/* ── Drag indicator ───────────────────────────────────── */
+.drag-ind{height:2px;border-radius:2px;background:var(--accent);margin:2px 0;pointer-events:none;flex-shrink:0;box-shadow:0 0 6px var(--accent-dim)}
+
+/* ── Task cards ───────────────────────────────────────── */
+.task-cards{display:flex;flex-direction:column;gap:9px}
+.task-card{background:var(--surface);border:1.5px solid var(--border-sub);border-radius:var(--r);display:flex;align-items:stretch;transition:border-color .15s,box-shadow .15s;position:relative}
+.task-card:hover{border-color:var(--border);box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.task-card.is-done{opacity:.5}
+.task-card.is-done .card-title{text-decoration:line-through;color:var(--text-2)}
+.task-card.is-ghost{opacity:.28;pointer-events:none}
+@keyframes taskPulse{0%{box-shadow:0 0 0 0 var(--accent-dim);background:var(--surface)}40%{box-shadow:0 0 0 3px var(--accent);background:var(--accent-lt)}100%{box-shadow:0 0 0 0 var(--accent-dim);background:var(--surface)}}
+.card-highlight{animation:taskPulse 1.8s ease forwards}
+
+.card-grip-col{display:flex;flex-direction:column;align-items:center;padding:13px 0 13px 12px;gap:8px;cursor:grab;flex-shrink:0}
+.card-grip-col:active{cursor:grabbing}
+.grip{font-size:14px;line-height:1;font-family:ui-monospace,monospace;color:var(--text-3);opacity:.3;transition:opacity .15s;user-select:none}
+.task-card:hover .grip{opacity:.7}
+.card-num{font-family:ui-monospace,monospace;font-size:10px;font-weight:700;color:var(--text-3);background:var(--surface-2);width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--border-sub);font-variant-numeric:tabular-nums;flex-shrink:0}
+
+.card-body{flex:1;padding:13px 15px 13px 10px;min-width:0;display:flex;flex-direction:column}
+.card-head{display:flex;align-items:flex-start;gap:6px}
+.exp-btn{width:16px;height:16px;border-radius:3px;display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:9px;font-family:ui-monospace,monospace;flex-shrink:0;margin-top:3px;transition:background .1s,color .1s}
+.exp-btn:hover{background:var(--border);color:var(--text-1)}
+.card-title{font-size:14px;line-height:1.46;color:var(--text-1);flex:1;min-width:0}
+.carried-tag{display:inline-flex;align-items:center;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--carry-col);flex-shrink:0;margin-top:3px;opacity:.9}
+
+.subtasks{margin-top:7px;display:flex;flex-direction:column;gap:3px;padding-left:22px}
+.subtask{display:flex;align-items:baseline;gap:5px;font-size:12px;color:var(--text-2);line-height:1.4}
+.st-arr{font-family:ui-monospace,monospace;font-size:10px;color:var(--text-3);flex-shrink:0}
+.subtask a{font-size:12px}
+
+.card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:11px;padding-top:10px;border-top:1px solid var(--border-sub);gap:10px}
+.meet-section{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.meet-date{font-family:ui-monospace,'Cascadia Code',monospace;font-size:11.5px;font-variant-numeric:tabular-nums;color:var(--text-2)}
+.meet-none{font-size:12px;color:var(--text-3)}
+.meet-clickable{cursor:pointer;border-radius:4px;padding:2px 5px;margin:-2px -5px;transition:background .12s}
+.meet-clickable:hover{background:var(--surface-2)}
+.quick-date-pop{position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:10px 12px;z-index:500;display:flex;flex-direction:column;gap:9px;min-width:216px}
+.quick-date-row{display:flex;gap:6px}
+.quick-date-finput{font-size:12.5px;border:1px solid var(--border);border-radius:5px;background:var(--surface);color:var(--text-1);padding:4px 7px;outline:none;min-width:0;flex:1}
+.quick-date-finput:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-dim)}
+.quick-date-time{flex:none;width:86px}
+.quick-date-actions{display:flex;justify-content:space-between;gap:6px}
+.quick-date-ok{font-size:12px;font-weight:600;padding:4px 14px;border-radius:5px;background:var(--accent);color:#fff;border:none;cursor:pointer}
+.quick-date-ok:hover{opacity:.85}
+.quick-date-clr{font-size:12px;padding:4px 10px;border-radius:5px;background:transparent;color:var(--text-2);border:1px solid var(--border);cursor:pointer}
+.quick-date-clr:hover{background:var(--surface-2)}
+.dr{font-family:ui-monospace,monospace;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap}
+.dr-over{background:var(--dr-over-bg);color:var(--dr-over-txt)}
+.dr-today{background:var(--dr-today-bg);color:var(--dr-today-txt)}
+.dr-soon{background:var(--dr-soon-bg);color:var(--dr-soon-txt)}
+.dr-norm{background:var(--dr-norm-bg);color:var(--dr-norm-txt)}
+
+.s-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:500;cursor:pointer;white-space:nowrap;transition:opacity .12s;flex-shrink:0}
+.s-pill:hover:not(:disabled){opacity:.7}
+.s-pill:disabled{cursor:default}
+.s-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.s-pill.todo{background:var(--s-todo-bg);color:var(--s-todo-txt)}.s-pill.todo .s-dot{background:var(--s-todo-dot)}
+.s-pill.in-prog{background:var(--s-wip-bg);color:var(--s-wip-txt)}.s-pill.in-prog .s-dot{background:var(--s-wip-dot)}
+.s-pill.done{background:var(--s-done-bg);color:var(--s-done-txt)}.s-pill.done .s-dot{background:var(--s-done-dot)}
+
+/* ── Kebab menu ───────────────────────────────────────── */
+.card-menu-wrap{position:relative;flex-shrink:0}
+.card-menu-btn{width:26px;height:26px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:var(--text-3);opacity:0;transition:opacity .15s,background .1s}
+.task-card:hover .card-menu-btn{opacity:1}
+.card-menu-btn:hover{background:var(--surface-2);color:var(--text-2)}
+.card-menu-btn.open{opacity:1;background:var(--surface-3);color:var(--text-1)}
+.card-dropdown{position:absolute;top:calc(100% + 4px);right:0;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);box-shadow:0 8px 32px rgba(0,0,0,.14);min-width:150px;z-index:200;overflow:hidden;animation:fadeIn .1s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.dd-item{display:flex;align-items:center;gap:8px;width:100%;padding:9px 13px;font-size:13px;color:var(--text-1);text-align:left;transition:background .1s}
+.dd-item:hover{background:var(--surface-2)}
+.dd-sep{height:1px;background:var(--border-sub);margin:3px 0}
+.dd-danger{color:#DC2626}
+.dd-danger:hover{background:var(--dr-over-bg)}
+
+/* ── Empty state ──────────────────────────────────────── */
+.empty-state{padding:64px 0;text-align:center;color:var(--text-3)}
+.empty-glyph{font-size:32px;margin-bottom:10px;opacity:.2}
+.empty-state p{font-size:13px;margin-bottom:20px}
+
+/* ── Memo back-reference ────────────────────────────── */
+.card-memo-ref{display:flex;align-items:center;gap:6px;padding:6px 12px 9px 14px;border-top:1px solid var(--border-sub);font-size:12px}
+.cmr-label{color:var(--accent);flex-shrink:0;font-size:11px;opacity:.8}
+.cmr-link{color:var(--accent);font-size:12px;text-decoration:underline;text-underline-offset:2px;text-align:left;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:opacity .12s}
+.cmr-link:hover{opacity:.7}
+.cmr-more{font-size:10.5px;font-weight:600;color:var(--text-3);flex-shrink:0;padding:2px 7px;border-radius:10px;background:var(--surface-2);border:1px solid var(--border-sub);transition:background .1s}
+.cmr-more:hover{background:var(--border-sub)}
+.cmr-dropdown{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);box-shadow:0 8px 32px rgba(0,0,0,.14);min-width:200px;z-index:300;overflow:hidden;animation:fadeIn .1s ease}
