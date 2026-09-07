@@ -2027,6 +2027,13 @@ document.getElementById('note-view-edit-icon').addEventListener('click', enterNo
 document.getElementById('note-view-edit-cancel').addEventListener('click', () => exitNoteEditMode(false));
 document.getElementById('note-view-edit-save').addEventListener('click',   () => exitNoteEditMode(true));
 document.getElementById('note-view-textarea').addEventListener('keydown', e => {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const el = e.target, s = el.selectionStart, end = el.selectionEnd;
+    el.value = el.value.slice(0, s) + '\t' + el.value.slice(end);
+    el.selectionStart = el.selectionEnd = s + 1;
+    return;
+  }
   if (e.key !== 'Enter') return;
   e.preventDefault();
   const el = e.target, s = el.selectionStart, end = el.selectionEnd;
@@ -2055,6 +2062,13 @@ document.getElementById('note-edit-save').addEventListener('click',   saveNoteMo
 document.getElementById('note-edit-overlay').addEventListener('click', e => { if (e.target === document.getElementById('note-edit-overlay')) closeNoteModal(); });
 document.getElementById('btn-add-note').addEventListener('click', () => openNoteModal());
 document.getElementById('note-edit-textarea').addEventListener('keydown', e => {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const el = e.target, s = el.selectionStart, end = el.selectionEnd;
+    el.value = el.value.slice(0, s) + '\t' + el.value.slice(end);
+    el.selectionStart = el.selectionEnd = s + 1;
+    return;
+  }
   if (e.key !== 'Enter') return;
   e.preventDefault();
   const el = e.target, s = el.selectionStart, end = el.selectionEnd;
