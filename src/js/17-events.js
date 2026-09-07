@@ -4,6 +4,7 @@
 function setView(v) {
   if (!store) return;
   if (S.context === 'lab') v = 'month'; // Lab is always month view
+  if (_selectMode && v !== 'week') { _selectMode = false; _selectedIds = new Set(); }
   S.view = v;
   if (v === 'notes') document.documentElement.dataset.view = 'notes';
   else delete document.documentElement.dataset.view;
@@ -156,6 +157,21 @@ document.getElementById('note-edit-textarea').addEventListener('keydown', e => {
   el.value = el.value.slice(0, s) + ins + el.value.slice(end);
   el.selectionStart = el.selectionEnd = s + ins.length;
 });
+document.getElementById('btn-cleanup').addEventListener('click', enterSelectMode);
+document.getElementById('sel-cancel').addEventListener('click', exitSelectMode);
+document.getElementById('sel-delete').addEventListener('click', deleteSelected);
+document.getElementById('sel-all-cb').addEventListener('change', e => {
+  const week = getWeek(S.weekRef); if (!week) return;
+  if (e.target.checked) week.tasks.forEach(t => _selectedIds.add(t.id));
+  else _selectedIds.clear();
+  document.querySelectorAll('.task-card[data-id]').forEach(card => {
+    const id = +card.dataset.id;
+    card.classList.toggle('sel-checked', _selectedIds.has(id));
+    const cb = card.querySelector('.card-sel-col input[type=checkbox]');
+    if (cb) cb.checked = _selectedIds.has(id);
+  });
+  _syncSelectToolbar();
+});
 document.getElementById('btn-mo-cancel').addEventListener('click', closeModal);
 document.getElementById('btn-mo-save').addEventListener('click',   saveTask);
 document.getElementById('overlay').addEventListener('click',    e => { if (e.target === document.getElementById('overlay')) closeModal(); });
@@ -247,7 +263,7 @@ document.getElementById('f-subs').addEventListener('keydown', e => {
 
 document.addEventListener('keydown', e => {
   const inInput = ['INPUT','TEXTAREA'].includes(document.activeElement.tagName);
-  if (e.key === 'Escape') { closeDropdowns(); closeNoteDropdowns(); closeModal(); closeNotes(); closeNoteModal(); closeNoteView(); closeConfirm(); closeTaskPicker(); }
+  if (e.key === 'Escape') { if (_selectMode) { exitSelectMode(); return; } closeDropdowns(); closeNoteDropdowns(); closeModal(); closeNotes(); closeNoteModal(); closeNoteView(); closeConfirm(); closeTaskPicker(); }
   if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); if (!S.viewOnly) openModal(); }
   if (!inInput && e.key === 'ArrowLeft')  { if (S.context === 'lab') navigateMonth(-1); else navigateWeek(-1); }
   if (!inInput && e.key === 'ArrowRight') { if (S.context === 'lab') navigateMonth(+1); else navigateWeek(+1); }

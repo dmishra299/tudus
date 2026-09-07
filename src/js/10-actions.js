@@ -120,6 +120,72 @@ function doAction(action, id) {
   }
 }
 
+// ── Multi-select cleanup ───────────────────────────────────
+let _selectMode = false;
+let _selectedIds = new Set();
+
+function enterSelectMode() {
+  if (S.viewOnly || S.context === 'lab') return;
+  _selectMode = true;
+  _selectedIds = new Set();
+  renderWeek();
+}
+
+function exitSelectMode() {
+  _selectMode = false;
+  _selectedIds = new Set();
+  renderWeek();
+}
+
+function _toggleCard(id) {
+  if (_selectedIds.has(id)) _selectedIds.delete(id);
+  else _selectedIds.add(id);
+  const card = document.querySelector(`.task-card[data-id="${id}"]`);
+  if (card) {
+    card.classList.toggle('sel-checked', _selectedIds.has(id));
+    const cb = card.querySelector('.card-sel-col input[type=checkbox]');
+    if (cb) cb.checked = _selectedIds.has(id);
+  }
+  _syncSelectToolbar();
+}
+
+function _syncSelectToolbar() {
+  const n = _selectedIds.size;
+  const week = getWeek(S.weekRef);
+  const total = week ? week.tasks.length : 0;
+  document.getElementById('sel-count').textContent = n ? `${n} of ${total} selected` : '';
+  const delBtn = document.getElementById('sel-delete');
+  if (delBtn) delBtn.disabled = n === 0;
+  const allCb = document.getElementById('sel-all-cb');
+  if (allCb) { allCb.checked = n > 0 && n === total; allCb.indeterminate = n > 0 && n < total; }
+}
+
+function deleteSelected() {
+  if (!_selectedIds.size) return;
+  const week = getWeek(S.weekRef); if (!week) return;
+  const ids = [..._selectedIds];
+  const n = ids.length;
+  const title = n === 1 ? (week.tasks.find(t => t.id === ids[0])?.title || 'task') : null;
+  const msg = n === 1
+    ? `"${title}"\n\nThis cannot be undone.`
+    : `${n} tasks will be permanently deleted.\n\nThis cannot be undone.`;
+  showConfirm(msg, `Delete ${n} task${n !== 1 ? 's' : ''}`, () => {
+    const w = getWeek(S.weekRef); if (!w) return;
+    ids.forEach(id => {
+      const i = w.tasks.findIndex(t => t.id === id);
+      if (i >= 0) w.tasks.splice(i, 1);
+      (store.notes || []).forEach(note => {
+        if (!note.linkedTaskIds) return;
+        const pos = note.linkedTaskIds.indexOf(id);
+        if (pos >= 0) note.linkedTaskIds.splice(pos, 1);
+      });
+    });
+    w.tasks.forEach((t, j) => t.rank = j + 1);
+    save(); exitSelectMode();
+    toast(`${n} task${n !== 1 ? 's' : ''} deleted`);
+  });
+}
+
 function toggleDropdown(id) {
   const dd  = document.getElementById('dd-' + id);
   const btn = document.querySelector(`.card-menu-btn[data-id="${id}"]`);

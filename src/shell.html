@@ -58,6 +58,19 @@
     <div id="week-view">
       <div class="carry-banner hidden" id="migrate-banner"></div>
       <div class="carry-banner hidden" id="carry-banner"></div>
+      <div class="week-toolbar hidden" id="week-toolbar">
+        <button class="btn-cleanup" id="btn-cleanup">✕ Clean up</button>
+      </div>
+      <div class="select-toolbar hidden" id="select-toolbar">
+        <label class="sel-all-lbl">
+          <input type="checkbox" id="sel-all-cb"><span>Select all</span>
+        </label>
+        <span class="sel-count" id="sel-count"></span>
+        <div style="display:flex;gap:8px;margin-left:auto;align-items:center">
+          <button class="btn-cancel" id="sel-cancel">Cancel</button>
+          <button class="sel-del-btn" id="sel-delete" disabled>Delete</button>
+        </div>
+      </div>
       <div class="task-cards" id="task-cards"></div>
     </div>
     <div id="month-view" class="hidden">

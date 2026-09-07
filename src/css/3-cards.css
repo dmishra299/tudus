@@ -79,6 +79,27 @@
 .dd-danger{color:#DC2626}
 .dd-danger:hover{background:var(--dr-over-bg)}
 
+/* ── Week cleanup toolbar ────────────────────────────────── */
+.week-toolbar{display:flex;justify-content:flex-end;padding:0 2px 8px;margin-top:-4px}
+.btn-cleanup{font-size:11.5px;padding:3px 10px;color:var(--text-3);border-radius:var(--r-sm);border:1px solid transparent;transition:color .12s,background .12s,border-color .12s}
+.btn-cleanup:hover{color:#DC2626;background:var(--dr-over-bg);border-color:rgba(220,38,38,.2)}
+
+/* ── Select toolbar ─────────────────────────────────────── */
+.select-toolbar{display:flex;align-items:center;gap:12px;padding:9px 14px;background:var(--surface-2);border:1.5px solid var(--border-sub);border-radius:var(--r);margin-bottom:10px}
+.sel-all-lbl{display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer;user-select:none;color:var(--text-2)}
+.sel-all-lbl input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.sel-count{font-size:12px;color:var(--text-3)}
+.sel-del-btn{font-size:12.5px;font-weight:600;padding:5px 14px;border-radius:5px;background:transparent;color:#DC2626;border:1.5px solid #DC2626;cursor:pointer;transition:background .12s,color .12s}
+.sel-del-btn:hover:not(:disabled){background:#DC2626;color:#fff}
+.sel-del-btn:disabled{opacity:.35;cursor:default}
+
+/* ── Cards in select mode ─────────────────────────────── */
+.card-sel-col{display:flex;align-items:center;justify-content:center;padding:0 8px 0 14px;flex-shrink:0;cursor:pointer}
+.card-sel-col input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;pointer-events:none}
+.task-card.sel-checked{border-color:var(--accent);background:var(--accent-lt)}
+.task-cards.selecting .task-card{cursor:pointer}
+.task-cards.selecting .card-menu-btn,.task-cards.selecting .s-pill,.task-cards.selecting .exp-btn,.task-cards.selecting .meet-clickable{pointer-events:none;opacity:.45}
+
 /* ── Empty state ──────────────────────────────────────── */
 .empty-state{padding:64px 0;text-align:center;color:var(--text-3)}
 .empty-glyph{font-size:32px;margin-bottom:10px;opacity:.2}

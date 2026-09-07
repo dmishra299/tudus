@@ -78,7 +78,9 @@ function buildCardHtml(t) {
   }
 
   return `
-    <div class="card-grip-col" title="Drag to reorder"><span class="grip">⠿</span><span class="card-num">${t.rank}</span></div>
+    ${_selectMode
+      ? `<div class="card-sel-col"><input type="checkbox"${_selectedIds.has(t.id) ? ' checked' : ''}></div>`
+      : `<div class="card-grip-col" title="Drag to reorder"><span class="grip">⠿</span><span class="card-num">${t.rank}</span></div>`}
     <div class="card-body">
       <div class="card-head">
         ${hasSub
@@ -120,7 +122,15 @@ function renderWeek() {
   renderCarryBanner(week);
 
   const cards = document.getElementById('task-cards');
-  if (!week || !week.tasks.length) {
+  const weekToolbar   = document.getElementById('week-toolbar');
+  const selectToolbar = document.getElementById('select-toolbar');
+
+  const hasTasks = !!(week && week.tasks.length);
+
+  if (!hasTasks) {
+    weekToolbar.classList.add('hidden');
+    selectToolbar.classList.add('hidden');
+    cards.classList.remove('selecting');
     if (S.context === 'lab') {
       const elsewhere = store.weeks.filter(w => w.ref !== S.weekRef && w.tasks.length > 0);
       const elseCount = elsewhere.reduce((n, w) => n + w.tasks.length, 0);
@@ -134,30 +144,44 @@ function renderWeek() {
     return;
   }
 
+  if (_selectMode) {
+    weekToolbar.classList.add('hidden');
+    selectToolbar.classList.remove('hidden');
+    _syncSelectToolbar();
+  } else {
+    weekToolbar.classList.toggle('hidden', S.viewOnly || S.context === 'lab');
+    selectToolbar.classList.add('hidden');
+  }
+
+  cards.classList.toggle('selecting', _selectMode);
   cards.innerHTML = '';
   week.tasks.forEach(t => {
     const card = document.createElement('div');
-    card.className = `task-card${t.status === 'done' ? ' is-done' : ''}`;
+    card.className = `task-card${t.status === 'done' ? ' is-done' : ''}${_selectMode && _selectedIds.has(t.id) ? ' sel-checked' : ''}`;
     card.dataset.id = t.id;
     card.innerHTML = buildCardHtml(t);
 
-    card.querySelectorAll('[data-a]').forEach(el => {
-      el.addEventListener('click', e => {
-        e.stopPropagation();
-        const a = el.dataset.a;
-        if (a === 'openmemo') { _noteOpenedFromTask = true; openNoteView(+el.dataset.mid); return; }
-        if (a === 'openmemomore') { _showMoreMemosDropdown(el, +card.dataset.id); return; }
-        doAction(a, +el.dataset.id);
+    if (_selectMode) {
+      card.addEventListener('click', () => _toggleCard(t.id));
+    } else {
+      card.querySelectorAll('[data-a]').forEach(el => {
+        el.addEventListener('click', e => {
+          e.stopPropagation();
+          const a = el.dataset.a;
+          if (a === 'openmemo') { _noteOpenedFromTask = true; openNoteView(+el.dataset.mid); return; }
+          if (a === 'openmemomore') { _showMoreMemosDropdown(el, +card.dataset.id); return; }
+          doAction(a, +el.dataset.id);
+        });
       });
-    });
-    if (t.notes) {
-      const np = card.querySelector('.card-notes-panel');
-      if (np) {
-        np.addEventListener('mouseenter', () => showNotesTooltip(np, t.notes, t.id));
-        np.addEventListener('mouseleave', hideNotesTooltip);
+      if (t.notes) {
+        const np = card.querySelector('.card-notes-panel');
+        if (np) {
+          np.addEventListener('mouseenter', () => showNotesTooltip(np, t.notes, t.id));
+          np.addEventListener('mouseleave', hideNotesTooltip);
+        }
       }
+      initDrag(card, t.id);
     }
-    initDrag(card, t.id);
     cards.appendChild(card);
   });
 }

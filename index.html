@@ -205,6 +205,27 @@ a:hover{text-decoration:underline}
 .dd-danger{color:#DC2626}
 .dd-danger:hover{background:var(--dr-over-bg)}
 
+/* ── Week cleanup toolbar ────────────────────────────────── */
+.week-toolbar{display:flex;justify-content:flex-end;padding:0 2px 8px;margin-top:-4px}
+.btn-cleanup{font-size:11.5px;padding:3px 10px;color:var(--text-3);border-radius:var(--r-sm);border:1px solid transparent;transition:color .12s,background .12s,border-color .12s}
+.btn-cleanup:hover{color:#DC2626;background:var(--dr-over-bg);border-color:rgba(220,38,38,.2)}
+
+/* ── Select toolbar ─────────────────────────────────────── */
+.select-toolbar{display:flex;align-items:center;gap:12px;padding:9px 14px;background:var(--surface-2);border:1.5px solid var(--border-sub);border-radius:var(--r);margin-bottom:10px}
+.sel-all-lbl{display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer;user-select:none;color:var(--text-2)}
+.sel-all-lbl input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.sel-count{font-size:12px;color:var(--text-3)}
+.sel-del-btn{font-size:12.5px;font-weight:600;padding:5px 14px;border-radius:5px;background:transparent;color:#DC2626;border:1.5px solid #DC2626;cursor:pointer;transition:background .12s,color .12s}
+.sel-del-btn:hover:not(:disabled){background:#DC2626;color:#fff}
+.sel-del-btn:disabled{opacity:.35;cursor:default}
+
+/* ── Cards in select mode ─────────────────────────────── */
+.card-sel-col{display:flex;align-items:center;justify-content:center;padding:0 8px 0 14px;flex-shrink:0;cursor:pointer}
+.card-sel-col input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;pointer-events:none}
+.task-card.sel-checked{border-color:var(--accent);background:var(--accent-lt)}
+.task-cards.selecting .task-card{cursor:pointer}
+.task-cards.selecting .card-menu-btn,.task-cards.selecting .s-pill,.task-cards.selecting .exp-btn,.task-cards.selecting .meet-clickable{pointer-events:none;opacity:.45}
+
 /* ── Empty state ──────────────────────────────────────── */
 .empty-state{padding:64px 0;text-align:center;color:var(--text-3)}
 .empty-glyph{font-size:32px;margin-bottom:10px;opacity:.2}
@@ -504,6 +525,19 @@ a:hover{text-decoration:underline}
     <div id="week-view">
       <div class="carry-banner hidden" id="migrate-banner"></div>
       <div class="carry-banner hidden" id="carry-banner"></div>
+      <div class="week-toolbar hidden" id="week-toolbar">
+        <button class="btn-cleanup" id="btn-cleanup">✕ Clean up</button>
+      </div>
+      <div class="select-toolbar hidden" id="select-toolbar">
+        <label class="sel-all-lbl">
+          <input type="checkbox" id="sel-all-cb"><span>Select all</span>
+        </label>
+        <span class="sel-count" id="sel-count"></span>
+        <div style="display:flex;gap:8px;margin-left:auto;align-items:center">
+          <button class="btn-cancel" id="sel-cancel">Cancel</button>
+          <button class="sel-del-btn" id="sel-delete" disabled>Delete</button>
+        </div>
+      </div>
       <div class="task-cards" id="task-cards"></div>
     </div>
     <div id="month-view" class="hidden">
@@ -1226,7 +1260,9 @@ function buildCardHtml(t) {
   }
 
   return `
-    <div class="card-grip-col" title="Drag to reorder"><span class="grip">⠿</span><span class="card-num">${t.rank}</span></div>
+    ${_selectMode
+      ? `<div class="card-sel-col"><input type="checkbox"${_selectedIds.has(t.id) ? ' checked' : ''}></div>`
+      : `<div class="card-grip-col" title="Drag to reorder"><span class="grip">⠿</span><span class="card-num">${t.rank}</span></div>`}
     <div class="card-body">
       <div class="card-head">
         ${hasSub
@@ -1268,7 +1304,15 @@ function renderWeek() {
   renderCarryBanner(week);
 
   const cards = document.getElementById('task-cards');
-  if (!week || !week.tasks.length) {
+  const weekToolbar   = document.getElementById('week-toolbar');
+  const selectToolbar = document.getElementById('select-toolbar');
+
+  const hasTasks = !!(week && week.tasks.length);
+
+  if (!hasTasks) {
+    weekToolbar.classList.add('hidden');
+    selectToolbar.classList.add('hidden');
+    cards.classList.remove('selecting');
     if (S.context === 'lab') {
       const elsewhere = store.weeks.filter(w => w.ref !== S.weekRef && w.tasks.length > 0);
       const elseCount = elsewhere.reduce((n, w) => n + w.tasks.length, 0);
@@ -1282,30 +1326,44 @@ function renderWeek() {
     return;
   }
 
+  if (_selectMode) {
+    weekToolbar.classList.add('hidden');
+    selectToolbar.classList.remove('hidden');
+    _syncSelectToolbar();
+  } else {
+    weekToolbar.classList.toggle('hidden', S.viewOnly || S.context === 'lab');
+    selectToolbar.classList.add('hidden');
+  }
+
+  cards.classList.toggle('selecting', _selectMode);
   cards.innerHTML = '';
   week.tasks.forEach(t => {
     const card = document.createElement('div');
-    card.className = `task-card${t.status === 'done' ? ' is-done' : ''}`;
+    card.className = `task-card${t.status === 'done' ? ' is-done' : ''}${_selectMode && _selectedIds.has(t.id) ? ' sel-checked' : ''}`;
     card.dataset.id = t.id;
     card.innerHTML = buildCardHtml(t);
 
-    card.querySelectorAll('[data-a]').forEach(el => {
-      el.addEventListener('click', e => {
-        e.stopPropagation();
-        const a = el.dataset.a;
-        if (a === 'openmemo') { _noteOpenedFromTask = true; openNoteView(+el.dataset.mid); return; }
-        if (a === 'openmemomore') { _showMoreMemosDropdown(el, +card.dataset.id); return; }
-        doAction(a, +el.dataset.id);
+    if (_selectMode) {
+      card.addEventListener('click', () => _toggleCard(t.id));
+    } else {
+      card.querySelectorAll('[data-a]').forEach(el => {
+        el.addEventListener('click', e => {
+          e.stopPropagation();
+          const a = el.dataset.a;
+          if (a === 'openmemo') { _noteOpenedFromTask = true; openNoteView(+el.dataset.mid); return; }
+          if (a === 'openmemomore') { _showMoreMemosDropdown(el, +card.dataset.id); return; }
+          doAction(a, +el.dataset.id);
+        });
       });
-    });
-    if (t.notes) {
-      const np = card.querySelector('.card-notes-panel');
-      if (np) {
-        np.addEventListener('mouseenter', () => showNotesTooltip(np, t.notes, t.id));
-        np.addEventListener('mouseleave', hideNotesTooltip);
+      if (t.notes) {
+        const np = card.querySelector('.card-notes-panel');
+        if (np) {
+          np.addEventListener('mouseenter', () => showNotesTooltip(np, t.notes, t.id));
+          np.addEventListener('mouseleave', hideNotesTooltip);
+        }
       }
+      initDrag(card, t.id);
     }
-    initDrag(card, t.id);
     cards.appendChild(card);
   });
 }
@@ -1458,6 +1516,72 @@ function doAction(action, id) {
     week.tasks[idx].status = nextStatus(week.tasks[idx].status);
     save(); toast(`Marked as ${STATUS_LABEL[week.tasks[idx].status]}`); renderCurrent();
   }
+}
+
+// ── Multi-select cleanup ───────────────────────────────────
+let _selectMode = false;
+let _selectedIds = new Set();
+
+function enterSelectMode() {
+  if (S.viewOnly || S.context === 'lab') return;
+  _selectMode = true;
+  _selectedIds = new Set();
+  renderWeek();
+}
+
+function exitSelectMode() {
+  _selectMode = false;
+  _selectedIds = new Set();
+  renderWeek();
+}
+
+function _toggleCard(id) {
+  if (_selectedIds.has(id)) _selectedIds.delete(id);
+  else _selectedIds.add(id);
+  const card = document.querySelector(`.task-card[data-id="${id}"]`);
+  if (card) {
+    card.classList.toggle('sel-checked', _selectedIds.has(id));
+    const cb = card.querySelector('.card-sel-col input[type=checkbox]');
+    if (cb) cb.checked = _selectedIds.has(id);
+  }
+  _syncSelectToolbar();
+}
+
+function _syncSelectToolbar() {
+  const n = _selectedIds.size;
+  const week = getWeek(S.weekRef);
+  const total = week ? week.tasks.length : 0;
+  document.getElementById('sel-count').textContent = n ? `${n} of ${total} selected` : '';
+  const delBtn = document.getElementById('sel-delete');
+  if (delBtn) delBtn.disabled = n === 0;
+  const allCb = document.getElementById('sel-all-cb');
+  if (allCb) { allCb.checked = n > 0 && n === total; allCb.indeterminate = n > 0 && n < total; }
+}
+
+function deleteSelected() {
+  if (!_selectedIds.size) return;
+  const week = getWeek(S.weekRef); if (!week) return;
+  const ids = [..._selectedIds];
+  const n = ids.length;
+  const title = n === 1 ? (week.tasks.find(t => t.id === ids[0])?.title || 'task') : null;
+  const msg = n === 1
+    ? `"${title}"\n\nThis cannot be undone.`
+    : `${n} tasks will be permanently deleted.\n\nThis cannot be undone.`;
+  showConfirm(msg, `Delete ${n} task${n !== 1 ? 's' : ''}`, () => {
+    const w = getWeek(S.weekRef); if (!w) return;
+    ids.forEach(id => {
+      const i = w.tasks.findIndex(t => t.id === id);
+      if (i >= 0) w.tasks.splice(i, 1);
+      (store.notes || []).forEach(note => {
+        if (!note.linkedTaskIds) return;
+        const pos = note.linkedTaskIds.indexOf(id);
+        if (pos >= 0) note.linkedTaskIds.splice(pos, 1);
+      });
+    });
+    w.tasks.forEach((t, j) => t.rank = j + 1);
+    save(); exitSelectMode();
+    toast(`${n} task${n !== 1 ? 's' : ''} deleted`);
+  });
 }
 
 function toggleDropdown(id) {
@@ -1924,6 +2048,7 @@ function cycleTheme() {
 function setView(v) {
   if (!store) return;
   if (S.context === 'lab') v = 'month'; // Lab is always month view
+  if (_selectMode && v !== 'week') { _selectMode = false; _selectedIds = new Set(); }
   S.view = v;
   if (v === 'notes') document.documentElement.dataset.view = 'notes';
   else delete document.documentElement.dataset.view;
@@ -2076,6 +2201,21 @@ document.getElementById('note-edit-textarea').addEventListener('keydown', e => {
   el.value = el.value.slice(0, s) + ins + el.value.slice(end);
   el.selectionStart = el.selectionEnd = s + ins.length;
 });
+document.getElementById('btn-cleanup').addEventListener('click', enterSelectMode);
+document.getElementById('sel-cancel').addEventListener('click', exitSelectMode);
+document.getElementById('sel-delete').addEventListener('click', deleteSelected);
+document.getElementById('sel-all-cb').addEventListener('change', e => {
+  const week = getWeek(S.weekRef); if (!week) return;
+  if (e.target.checked) week.tasks.forEach(t => _selectedIds.add(t.id));
+  else _selectedIds.clear();
+  document.querySelectorAll('.task-card[data-id]').forEach(card => {
+    const id = +card.dataset.id;
+    card.classList.toggle('sel-checked', _selectedIds.has(id));
+    const cb = card.querySelector('.card-sel-col input[type=checkbox]');
+    if (cb) cb.checked = _selectedIds.has(id);
+  });
+  _syncSelectToolbar();
+});
 document.getElementById('btn-mo-cancel').addEventListener('click', closeModal);
 document.getElementById('btn-mo-save').addEventListener('click',   saveTask);
 document.getElementById('overlay').addEventListener('click',    e => { if (e.target === document.getElementById('overlay')) closeModal(); });
@@ -2167,7 +2307,7 @@ document.getElementById('f-subs').addEventListener('keydown', e => {
 
 document.addEventListener('keydown', e => {
   const inInput = ['INPUT','TEXTAREA'].includes(document.activeElement.tagName);
-  if (e.key === 'Escape') { closeDropdowns(); closeNoteDropdowns(); closeModal(); closeNotes(); closeNoteModal(); closeNoteView(); closeConfirm(); closeTaskPicker(); }
+  if (e.key === 'Escape') { if (_selectMode) { exitSelectMode(); return; } closeDropdowns(); closeNoteDropdowns(); closeModal(); closeNotes(); closeNoteModal(); closeNoteView(); closeConfirm(); closeTaskPicker(); }
   if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); if (!S.viewOnly) openModal(); }
   if (!inInput && e.key === 'ArrowLeft')  { if (S.context === 'lab') navigateMonth(-1); else navigateWeek(-1); }
   if (!inInput && e.key === 'ArrowRight') { if (S.context === 'lab') navigateMonth(+1); else navigateWeek(+1); }
