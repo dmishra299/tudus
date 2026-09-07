@@ -104,6 +104,7 @@ document.getElementById('btn-add').addEventListener('click', () => {
   openModal();
 });
 document.getElementById('note-view-close').addEventListener('click', closeNoteView);
+document.getElementById('note-view-modal-title').addEventListener('click', () => enterNoteEditMode(true));
 document.getElementById('note-view-edit-icon').addEventListener('click', enterNoteEditMode);
 document.getElementById('note-view-edit-cancel').addEventListener('click', () => exitNoteEditMode(false));
 document.getElementById('note-view-edit-save').addEventListener('click',   () => exitNoteEditMode(true));

@@ -65,11 +65,11 @@
 /* ── Full-view modal ─────────────────────────────────── */
 .note-view-modal{width:560px;max-width:calc(100vw - 32px)}
 .note-view-head{margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border-sub)}
-.note-view-modal-title{font-size:19px;font-weight:700;color:var(--text-1);line-height:1.3;margin-bottom:5px}
+.note-view-modal-title{font-size:19px;font-weight:700;color:var(--text-1);line-height:1.3;margin-bottom:0;cursor:pointer;transition:color .12s}
+.note-view-modal-title:hover{color:var(--accent)}
 .note-view-modal-date{font-size:11px;font-family:ui-monospace,monospace;color:var(--text-3)}
 .note-view-body-wrap{position:relative;margin-bottom:4px}
 .nvm-title-row{margin-bottom:5px}
-.note-view-modal-title{margin-bottom:0}
 .note-view-ttl-input{
   font-size:19px;font-weight:700;color:var(--text-1);
   background:transparent;border:none;border-bottom:2px solid var(--accent);

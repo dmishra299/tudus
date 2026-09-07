@@ -209,15 +209,20 @@ function _setNoteViewMode(mode) {
   document.getElementById('note-view-edit-save').classList.toggle('hidden', !edit);
 }
 
-function enterNoteEditMode() {
+function enterNoteEditMode(focusTitle) {
   const n = _getNote(_viewNoteId); if (!n) return;
   _noteViewEditMode = true;
   document.getElementById('note-view-ttl-input').value = n.title || '';
   document.getElementById('note-view-textarea').value  = n.content || '';
   _setNoteViewMode('edit');
-  const ta = document.getElementById('note-view-textarea');
-  ta.focus();
-  ta.setSelectionRange(ta.value.length, ta.value.length);
+  if (focusTitle === true) {
+    const inp = document.getElementById('note-view-ttl-input');
+    inp.focus(); inp.select();
+  } else {
+    const ta = document.getElementById('note-view-textarea');
+    ta.focus();
+    ta.setSelectionRange(ta.value.length, ta.value.length);
+  }
 }
 
 function exitNoteEditMode(doSave) {
