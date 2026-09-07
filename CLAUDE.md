@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Working conventions
+
+- **Never commit or push** unless the user explicitly asks. Make the code change and stop — the user reviews before committing.
+- **No Co-Authored-By trailer** in commit messages. This is a public repo and the user does not want Claude attribution visible on GitHub.
+
 ## What this is
 
 **tudus** is a personal minimalist task-tracking tool for a software architect. `index.html` is the single-file production app — **built** from modular sources in `src/` via `node build.js`. `server.js` is an optional companion server (Node.js, no npm) that persists data to `tudus-work.json` and `tudus-lab.json` instead of `localStorage`. Two contexts exist — **Work** (weekly tasks) and **Lab** (side projects / experiments) — each with its own data store.
